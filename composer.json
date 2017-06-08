@@ -1,0 +1,6 @@
+{
+    "require": {
+        "ezyang/htmlpurifier": "^4.9",
+        "lcobucci/jwt": "^3.2"
+    }
+}

@@ -1,0 +1,22 @@
+POHLED PRIDEJ
+
+rozlozeni formu
+js - skok, enter prevent, synchro selectboxu se submit, clear input
+vochcani ignorace autocomplete
+ajax -  vyhledani ory v db
+dodelat druhej sloupec formu 
+vicenasobny rezim rezignuje po submitu formu
+js kontrola souctova imei
+
+TODO
+VRATZAZNAMY VRACI HOVNO, ASI TO NEDA CHYBEJICI PARAMETRY U OBJEKTU
+vyhledat zbozi ve sklade - neni ve druhym?
+logovani zbozi do minusu - soubor, db => jednoduche statistiky pro pobocku
+ajax - vyhledani imei v db ???
+dualsim - vynutit u prijmu dva imei
+
+rozmyslet si, co chci vyznacovat - kravina davat vedet, ze to zbozi pujde do minusu
+nejak rozumne doplnovat imei - nacist ho a zkontrolovat - nechat kontrolu na lidskym oku, zabyvat se jinym druhym pipnutym/jinym imei
+
+UPRAVY DB
+zarizeni + faktura + typ ** uprava ID -> id ** uprava imei -> imei1 a imei1 -> imei2 

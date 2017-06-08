@@ -1,0 +1,507 @@
+#header {
+    min-height: 200px;
+}
+
+.centrovano {
+    text-align: center;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    background-color: lightgrey;
+    height: 100%;
+}
+
+#content {
+    min-height: calc(100vh - 157px);
+}
+
+footer {
+    position: relative;
+    height: 30px;
+    width: 100%;
+    background-color: #222;
+    color: #9d9d9d;
+    font-size: larger;
+    text-align: center;
+}
+
+.navbar-pobocka {
+    color: lightgray;
+}
+
+.nav-logo-center {
+    position: relative;
+    resize: vertical;
+}
+
+.nav-logo-center div {
+    position: relative;
+    top: 30%;
+    /*left: 20px;*/
+    /*right: 20px;*/
+    /*padding: 20px;*/
+    /*transform: translateY(-50%);*/
+    resize: vertical;
+
+}
+
+.navbar-pobocka:hover {
+    color: lightgray;
+    text-decoration: underline;
+}
+
+.hlavni-navigace li a:hover {
+    box-shadow: 1px -1px 53px 1px black;
+}
+
+/*.navbar-brand:hover {*/
+    /*box-shadow: 0px 0px 23px 40px rgba(0, 0, 0, 1);*/
+
+/*}*/
+
+/*.navbar-brand-wrap:hover {*/
+    /*background-color: black;*/
+/*}*/
+
+li .dis {
+    cursor: not-allowed;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.nav-margin {
+    margin: 20px 0;
+}
+
+.content-margin {
+    margin: 40px 0;
+}
+
+.center-margin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.hlavni-navigace {
+    margin: 0 auto;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+.has-feedback .form-control {
+    padding-right: 10px;
+}
+
+/** PRIDEJ CSS **/
+
+#formular-wrap {
+    display: flex;
+}
+
+.form-horizontal {
+    height: 100%;
+}
+
+.form-horizontal input, .input-group {
+    margin-bottom: 10px;
+}
+
+.form-horizontal hr {
+    margin: 10px 0px;
+}
+
+.form-horizontal #prepinac-vydavani, #prepinac-skakani {
+    box-shadow: 1px 1px 5px #888888;
+}
+
+select .nadpis {
+    color: white;
+    background-color: grey;
+}
+
+.cerveny-stin {
+    box-shadow: 1px -1px 53px 1px rgba(252, 3, 3, 1);
+}
+
+.form-horizontal .glyphicon-remove-sign {
+    cursor: pointer;
+}
+
+#informace-ean input, textarea {
+    min-width: 100%;
+    overflow: auto;
+    resize: none;
+}
+
+/** YE OLDE CSS **/
+
+/*!**/
+/*To change this license header, choose License Headers in Project Properties.*/
+/*To change this template file, choose Tools | Templates*/
+/*and open the template in the editor.*/
+/**!*/
+/*!**/
+/*Created on : 22.3.2016, 15:48:28*/
+/*Author     : F@nny*/
+/**!*/
+
+/*!*body {*!*/
+/*!*background-color: white;*!*/
+/*!*}*!*/
+
+/*!*header {*!*/
+/*!*padding: 30px;*!*/
+/*!*padding-bottom: 15px;*!*/
+/*!*}*!*/
+
+/*!*header nav {*!*/
+/*!*background-color: gray;*!*/
+/*!*text-transform: uppercase;*!*/
+/*!*}*!*/
+
+/*!*header nav .active {*!*/
+/*!*background-color: black;*!*/
+/*!*}*!*/
+
+/*!*.navbar-default .navbar-nav > li > .active {*!*/
+/*!*color: white;*!*/
+/*!*}*!*/
+
+/*!*header nav ul :hover{*!*/
+/*!*background-color: grey;*!*/
+/*!*}*!*/
+
+/*!*.navbar-default .navbar-nav > li > a:hover {*!*/
+/*!*color: white;*!*/
+/*!*}*!*/
+
+/*!*#logy:hover:before {*!*/
+/*!*content: "prover ";*!*/
+/*!*}*!*/
+
+/*!*#navod:hover:before {*!*/
+/*!*content: "precti ";*!*/
+/*!*}*!*/
+
+/*!*#domu:hover:before {*!*/
+/*!*content: "jdi ";*!*/
+/*!*}*!*/
+
+/*!*#pridej:hover:after {*!*/
+/*!*content: " zaznam";*!*/
+/*!*}*!*/
+
+/*!*#prehled:hover:before {*!*/
+/*!*content: "ziskej ";*!*/
+/*!*}*!*/
+
+/*!*#zaloha:hover:after {*!*/
+/*!*content: "";*!*/
+/*!*}*!*/
+
+/*!*#synchro:hover:after {*!*/
+/*!*content: "";*!*/
+/*!*}*!*/
+
+/*!*#inventura:hover:after {*!*/
+/*!*content: " skladu";*!*/
+/*!*}*!*/
+
+/*!*#vystav:hover:after {*!*/
+/*!*content: " vse";*!*/
+/*!*}*!*/
+
+/*!*#uzivatel:hover:after{*!*/
+/*!*content: "ske rozhrani";*!*/
+/*!*}*!*/
+
+/*!*article {*!*/
+/*!*padding: 40px;*!*/
+/*!*padding-top: 0px;*!*/
+/*!*}*!*/
+
+/*#insert {*/
+/*width: 400px;*/
+/*}*/
+
+/*.formular {*/
+/*padding: 30px;*/
+/*padding-top: 0;*/
+/*}*/
+
+/*#vypis {*/
+/*padding-top: 50px;*/
+/*}*/
+
+/*#vypis table {*/
+/*border: gray solid 1px;*/
+/*}*/
+
+/*#prehled-form {*/
+
+/*}*/
+
+/*.vysledek > td {*/
+/*font-weight: bolder;*/
+/*border-top: grey double medium !important;*/
+/*}*/
+
+/*input[type=number] {-moz-appearance: textfield;}*/
+/*::-webkit-inner-spin-button { -webkit-appearance: none;}*/
+/*::-webkit-outer-spin-button { -webkit-appearance: none;}*/
+
+/*div.fileinputs {*/
+/*position: relative;*/
+/*}*/
+
+/*div.fakefile {*/
+/*position: absolute;*/
+/*top: 0px;*/
+/*left: 0px;*/
+/*z-index: 1;*/
+
+/*}*/
+
+/*input.file {*/
+/*position: relative;*/
+/*text-align: right;*/
+/*-moz-opacity:0 ;*/
+/*filter:alpha(opacity: 0);*/
+/*opacity: 0;*/
+/*z-index: 2;*/
+/*}*/
+
+/*#inventuraVysledek td {*/
+/*border: black solid 1px;*/
+/*padding: 10px;*/
+/*}*/
+
+/*.vydej {*/
+/*float:right;*/
+/*}*/
+
+/*.vydej:hover, .prijem:hover {*/
+/*background-color: darkgrey !important;*/
+/*color:black;*/
+/*border-color: black;*/
+/*}*/
+
+/*.prijem, .vydej{*/
+/*border-color: black;*/
+/*}*/
+
+/*.oznaceno {*/
+/*background-color: lightgreen;*/
+/*color: grey;*/
+/*}*/
+
+/*.oznacenoC{*/
+/*background-color: #ff9e7b;*/
+/*color: white;*/
+/*}*/
+
+/*.oznacenoC:hover{*/
+/*background-color: red !important;*/
+/*}*/
+
+/*.oznaceno:hover {*/
+/*background-color: green !important;*/
+/*color: white;*/
+/*}*/
+
+/*#nevystavene td{*/
+
+/*}*/
+
+/*.navodSeznam, .navodSeznam a {*/
+/*color: black;*/
+/*text-decoration: underline;*/
+/*}*/
+
+/*.navodSeznam a:hover {*/
+/*color: darkslategray;*/
+/*}*/
+
+/*@media print{*/
+/*body{*/
+/*background-color: black !important;*/
+/*}*/
+/*.vysledek{*/
+/*color: white;*/
+/*}*/
+/*.oznaceno {*/
+/*color: blue !important;*/
+/*-webkit-print-color-adjust: exact;*/
+/*}*/
+/*}*/
+
+/*div#zk {*/
+/*position: relative;*/
+/*width: 300px;*/
+/*}*/
+
+/*img#zk{*/
+/*-moz-transition: all .5s;*/
+/*-webkit-transition: all .5s;*/
+/*transition: all .5s;*/
+/*}*/
+
+/*div#zk:active img {*/
+/*margin: auto;*/
+/*position: relative;*/
+/*-moz-transform: scale(3.3,3.3);*/
+/*-webkit-transform: scale(3.3,3.3);*/
+/*transform: scale(2.0,2.0);*/
+/*}*/
+
+/*@media (min-width: 768px) and (max-width: 1000px) {*/
+
+/*#logy:hover:before {*/
+/*content: "" !important;*/
+/*}*/
+
+/*#navod:hover:before {*/
+/*content: "" !important;*/
+/*}*/
+
+/*#domu:hover:before {*/
+/*content: "" !important;*/
+/*}*/
+
+/*#pridej:hover:after {*/
+/*content: "" !important;*/
+/*}*/
+
+/*#prehled:hover:before {*/
+/*content: "" !important;*/
+/*}*/
+
+/*#zaloha:hover:after {*/
+/*content: "" !important;*/
+/*}*/
+
+/*#synchro:hover:after {*/
+/*content: "" !important;*/
+/*}*/
+
+/*#inventura:hover:after {*/
+/*content: "" !important;*/
+/*}*/
+
+/*#vystav:hover:after {*/
+/*content: "" !important;*/
+/*}*/
+
+/*#uzivatel:hover:before{*/
+/*content: "" !important;*/
+/*}*/
+
+/*}*/
+
+/*@media screen and (max-width:1200px) {*/
+/*.rightHalf {width: 600px !important;}*/
+/*#napoveda {font-size: x-small}*/
+/*}*/
+
+/*@media screen and (max-width:1000px) {*/
+/*.rightHalf {width: 460px !important;}*/
+/*#napoveda {font-size: 10px}*/
+/*}*/
+
+/*@media screen and (max-width:1000px) {*/
+/*.rightHalf {width: 460px !important;}*/
+/*#napoveda {font-size: 10px}*/
+/*#popis {font-size: 10px}*/
+/*.rightHalf h4 {font-size: 15px}*/
+/*}*/
+
+/*.ziskejInfo {*/
+/*width: 300px;*/
+/*background-color: white;*/
+/*border: black solid thin;*/
+/*padding-top: 5px;*/
+/*padding-bottom: 5px;*/
+
+/*}*/
+
+/*.styla{*/
+/*position: absolute;*/
+/*top:-45px;*/
+/*left: 40px;*/
+/*}*/
+
+/*.stylb {*/
+/*position: absolute;*/
+/*left: 500px;*/
+/*top: -110px;*/
+/*}*/
+
+/*.stylc {*/
+/*position: absolute;*/
+/*top: -110px;*/
+/*left: 500px;*/
+/*}*/
+
+/*.napoveda {*/
+/*font-family: "Comic Sans MS";*/
+/*font-style: italic;*/
+/*color: blue;*/
+/*}*/
+
+/*.napoveda:before {*/
+/*content: "TIP: ";*/
+/*}*/
+
+/*#pridejHlasky {*/
+/*position: relative;*/
+/*width: 300px;*/
+/*background-color: white;*/
+/*border: black solid thin;*/
+/*padding-top: 10px;*/
+/*padding-bottom: 5px;*/
+/*bottom: 130px;*/
+/*left: 265px;*/
+/*display: none;*/
+/*}*/
+
+/*#wrapPosledniZaznamy {*/
+
+/*}*/
+
+/*#posledniZaznamy {*/
+/*font-size: 12px;*/
+/*}*/
+
+/*#wrapPosledniZaznamy:hover {*/
+
+/*}*/
+
+/*#zobrazPosledniZaznamy {*/
+/*position: relative;*/
+/*right: 0;*/
+/*height: 100px;*/
+/*}*/
+
+/*.vysun {*/
+/*display: block !important;*/
+/*}*/
+
