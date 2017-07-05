@@ -9,9 +9,9 @@
 namespace app\modely;
 
 
-use libs\spravce;
+use libs\Spravce;
 
-class spravcezbozi extends spravce {
+class Spravcezbozi extends Spravce {
 
     public function vratZboziEan($ean) {
         return $this->db->dotazObjekt('SELECT * FROM sap WHERE ean = ?', 'zbozi', array($ean));

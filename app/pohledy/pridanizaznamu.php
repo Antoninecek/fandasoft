@@ -237,10 +237,16 @@
             }
         });
 
-        $('#tlacitko-zobraz-zaznamy').on('click', function(){
+        $('#tlacitko-zobraz-zaznamy').on('click', function () {
             $.post("zaznam/vratPosledniZaznamy?pocet=10", null, function (data, status) {
                 console.log(data);
             });
+        });
+
+        // zobraz zaznamy
+        $('#tlacitko-zobraz-zaznamy').on('click', function () {
+            $('#formular-container').hide('slow');
+            $('#zaznamy-container').show();
         });
 
     })
@@ -248,11 +254,12 @@
 
 </script>
 
-<div class="container-fluid">
+<div class="container-fluid" id="formular-container">
     <div class="row">
         <div id="formular-wrap" class="col-sm-5">
             <div class="form-horizontal">
-                <form id="formular" action="zaznam/pridej?do=pridej" method="post" autocomplete="off">
+                <form id="formular" action="zaznam/pridej" method="post" autocomplete="off">
+                    <input type="hidden" name="token" value="<?= $formToken ?>">
                     <!--JEN PRO VOCHCAVKU AUTOCOMPLETE-->
                     <input type="password" style="display: none;">
 
@@ -409,4 +416,36 @@
             </div>
         </div>
     </div>
+</div>
+<div class="container-fluid hidden" id="zaznamy-container">
+    <table class="table-hover">
+        <thead>
+        <th>EAN</th>
+        <th>ORA</th>
+        <th>IMEI 1</th>
+        <th>IMEI 2</th>
+        <th>KUSY</th>
+        <th>JMENO</th>
+        <th>TEXT</th>
+        <th>DATUM</th>
+        </thead>
+        <tbody>
+        <?php
+        foreach ($posledniZaznamy as $z) {
+            ?>
+            <tr>
+                <td><?= $z->getEan() ?></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php
+        }
+        ?>
+        </tbody>
+    </table>
 </div>

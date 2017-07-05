@@ -11,7 +11,7 @@ namespace app\modely;
 use libs\Spravce;
 
 
-class spravcezaznamu extends Spravce {
+class Spravcezaznamu extends Spravce {
 
     public function vratPosledniPrijem($ean, $imei, $pobocka) {
         return $this->db->dotazObjekt('SELECT * FROM `zarizeni` where ean = ? and kusy > 0 and pobocka = ? and (imei1 = ? or imei2 = ?) ORDER BY `datum` DESC', 'zaznam', array($ean, $pobocka->getId(), $imei, $imei));
@@ -31,7 +31,9 @@ class spravcezaznamu extends Spravce {
 
     public function vratZaznamy($pocet, $pobocka) {
         return $this->db->dotazVsechnyObjekty('select A.id, A.ean, A.imei1, A.imei2, A.kusy, C.jmeno, A.text, A.typ, A.faktura, A.datum, B.zbozi, B.model, B.popis
-from (select * from zarizeni where pobocka = ? order by datum desc limit ?) as A left join sap as B on A.ean = B.ean left join uzivatele as C on A.jmeno = C.id', 'zaznam', array($pobocka->getId(), $pocet));
+from (select * from zarizeni where pobocka = 1 order by datum desc limit ?)
+as A left join sap as B on A.ean = B.ean left join uzivatele as C on A.jmeno = C.id', 'zaznam', array( $pocet));
     }
 
+    //array($pobocka->getId(), $pocet)
 }

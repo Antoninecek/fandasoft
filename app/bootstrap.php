@@ -74,7 +74,14 @@ class Bootstrap {
             foreach ($par[0] as $p) {
                 $this->parametry[explode('=', $p)[0]] = explode('=', $p)[1];
             }
+
         }
+
+        // POST jako parametry pro jednoduchou praci s formulari
+        foreach ($_POST as $k => $v) {
+            $this->parametry[$k] = $v;
+        }
+
 
         $token = !empty($_COOKIE[COOKIE_POBOCKA]) ? $_COOKIE[COOKIE_POBOCKA] : null;
         $signer = new Sha256();

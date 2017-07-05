@@ -7,23 +7,12 @@
  */
 
 namespace libs;
-use PDOException;
 
-class spravce {
+class Spravce {
 
     protected $db = null;
 
-    public function __construct() {
-//        try {
-            $this->db = new db();
-//        } catch (PDOException $e){
-//            print_r($e);
-//            echo "aaaa";
-//        }
+    public function __construct($spojeni) {
+        $this->db = new db($spojeni);
     }
-
-//    public function getSpojeni(){
-//        return $this->db;
-//    }
-
 }

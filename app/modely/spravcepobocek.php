@@ -10,7 +10,7 @@ namespace app\modely;
 
 use libs\Spravce;
 
-class spravcepobocek extends Spravce {
+class Spravcepobocek extends Spravce{
 
 
     /**

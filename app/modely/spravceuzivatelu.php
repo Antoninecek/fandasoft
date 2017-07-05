@@ -11,7 +11,7 @@ namespace app\modely;
 use libs\Spravce;
 use app\modely\pobocka;
 
-class spravceUzivatelu extends Spravce{
+class SpravceUzivatelu extends Spravce{
 
     /**
      * @param $jmeno

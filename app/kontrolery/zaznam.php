@@ -8,14 +8,12 @@
 
 namespace app\kontrolery;
 
-use app\modely\spravceUzivatelu;
+use app\modely\Spravceuzivatelu;
+use app\modely\Spravcezaznamu;
+use app\modely\Spravcezbozi;
 use libs\Kontroler;
 use libs\Pohled;
-use app\modely\spravcezaznamu;
-use app\modely\spravcezbozi;
-use app\modely\upozorneni;
-
-use PDOException;
+use app\modely\Upozorneni;
 
 
 /**
@@ -25,55 +23,33 @@ use PDOException;
  */
 class zaznam extends Kontroler {
 
+    /**
+     * @var null|Spravcezaznamu
+     */
     private $sz = null;
+    /**
+     * @var null|Spravcezbozi
+     */
     private $szb = null;
+    /**
+     * @var null|Spravceuzivatelu
+     */
     private $su = null;
 
     public function __construct() {
         $this->setSablonu('app/sablony/vychozi');
-        $this->sz = $this->vytvorspravcezaznamu();
-        $this->szb = $this->vytvorspravcezbozi();
-        $this->su = $this->vytvorspravceuzivatelu();
-
-    }
-
-    private function vytvorspravceuzivatelu() {
         try {
-            $spravce = new spravceUzivatelu();
-        } catch (PDOException $e) {
-            $handler = new Error();
-            $handler->database();
-            exit();
+            $this->sz = $this->vytvorSpravce("zaznamu");
+            $this->szb = $this->vytvorSpravce("zbozi");
+            $this->su = $this->vytvorSpravce("uzivatelu");
+        } catch (\Exception $e) {
+            throw $e;
         }
-        return $spravce;
-    }
-
-    private function vytvorspravcezbozi() {
-        try {
-            $spravce = new spravcezbozi();
-        } catch (PDOException $e) {
-            $handler = new Error();
-            $handler->database();
-            exit();
-        }
-        return $spravce;
-    }
-
-    private function vytvorspravcezaznamu() {
-        try {
-            $spravce = new spravcezaznamu();
-        } catch (PDOException $e) {
-            $handler = new Error();
-            $handler->database();
-            exit();
-        }
-        return $spravce;
     }
 
     public function index() {
         $this->pridej();
     }
-
 
     public function prehled($parametry = null) {
 
@@ -89,10 +65,10 @@ class zaznam extends Kontroler {
             }
 
             if (!empty($zaznamy)) {
-                $this->sablona->set('upozorneni', new upozorneni('success', "celkem " . sizeof($zaznamy) . " zaznamu"));
+                $this->sablona->set('upozorneni', new Upozorneni('success', "celkem " . sizeof($zaznamy) . " zaznamu"));
                 $content->set('zaznamy', $zaznamy);
             } else {
-                $this->sablona->set('upozorneni', new upozorneni('warning', "zadny zaznam"));
+                $this->sablona->set('upozorneni', new Upozorneni('warning', "zadny zaznam"));
             }
 
         }
@@ -128,8 +104,18 @@ class zaznam extends Kontroler {
 
         $this->sablona->set('titulek', 'Pridej');
         $content = new Pohled('app/pohledy/pridanizaznamu');
+        $posledniZaznamy = $this->vratPosledniZaznamy(10);
+//
+        $content->set('posledniZaznamy', $posledniZaznamy);
 
-        if (isset($parametry['do']) && $parametry['do'] == "pridej") {
+
+        if (!empty($parametry['token']) && false) {
+
+            if (!$this->validateFormToken($parametry['token'])) {
+                $this->pridej();
+                exit();
+            }
+
             $select = '';
             $text = '';
             $heslo = '';
@@ -141,9 +127,7 @@ class zaznam extends Kontroler {
             $cetnost = '';
             $kusy = '';
 
-            $uzivatel = '';
-
-            $vstupy = $this->zkontrolujVstupy($_POST);
+            $vstupy = $this->zkontrolujVstupy($parametry);
             extract($vstupy);
 
             // nesmi byt nullovy
@@ -175,9 +159,9 @@ class zaznam extends Kontroler {
 
                         $ovlivneno = $this->sz->pridejZaznam($ean, $imei1, $imei2, $kusy, $uzivatel->getId(), $text, $select, $faktura, $_SESSION[SESSION_POBOCKA]);
                         if ($ovlivneno) {
-                            $this->sablona->set('upozorneni', new upozorneni('success', "zbozi vydano"));
+                            $this->sablona->set('upozorneni', new Upozorneni('success', "zbozi vydano"));
                         } else {
-                            $this->sablona->set('upozorneni', new upozorneni('danger', "neco se podelalo u vydeje"));
+                            $this->sablona->set('upozorneni', new Upozorneni('danger', "neco se podelalo u vydeje"));
                         }
 
                     } elseif ($submit == "Prijem") {// prijem
@@ -193,12 +177,12 @@ class zaznam extends Kontroler {
                             $ovlivneno = $this->sz->pridejZaznam($ean, $imei1, $imei2, $kusy, $uzivatel->getId(), $text, $select, $faktura, $_SESSION[SESSION_POBOCKA]);
 
                             if ($ovlivneno) {
-                                $this->sablona->set('upozorneni', new upozorneni('success', "zbozi pridano"));
+                                $this->sablona->set('upozorneni', new Upozorneni('success', "zbozi pridano"));
                             } else {
-                                $this->sablona->set('upozorneni', new upozorneni('danger', "neco se podelalo u prijmu"));
+                                $this->sablona->set('upozorneni', new Upozorneni('danger', "neco se podelalo u prijmu"));
                             }
                         } else {
-                            $this->sablona->set('upozorneni', new upozorneni('danger', "tenhle imei je uz pridanej"));
+                            $this->sablona->set('upozorneni', new Upozorneni('danger', "tenhle imei je uz pridanej"));
                         }
                     }
 
@@ -211,27 +195,36 @@ class zaznam extends Kontroler {
                     }
 
                 } else {
-                    $this->sablona->set('upozorneni', new upozorneni('danger', "spatne heslo"));
+                    $this->sablona->set('upozorneni', new Upozorneni('danger', "spatne heslo"));
                 }
             } else {
-                $this->sablona->set('upozorneni', new upozorneni('danger', "neco mi chybi"));
+                $this->sablona->set('upozorneni', new Upozorneni('danger', "neco mi chybi"));
             }
         }
 
+        $formToken = $this->getFormToken();
+        $content->set('formToken', $formToken);
+        $_SESSION[FORMTOKEN] = $formToken;
+
         $this->sablona->set('content', $content->rendruj());
+
         echo $this->sablona->rendruj();
     }
 
     public function vratInfoZbozi() {
         $ean = !empty($_REQUEST['ean']) ? $_REQUEST['ean'] : null;
         if (is_numeric($ean)) {
-            $vstupy = $this->zkontrolujVstupy(array('ean' => $ean));
-            $zbozi = $this->szb->vratZboziEan($vstupy['ean']);
-            if (is_object($zbozi)) {
-                $dual = $this->szb->zjistiDualsim($zbozi->getZbozi());
-                $zbozi->setDualsim($dual['dualsim']);
-                echo json_encode($zbozi);
-            } else {
+            try {
+                $vstupy = $this->zkontrolujVstupy(array('ean' => $ean));
+                $zbozi = $this->szb->vratZboziEan($vstupy['ean']);
+                if (is_object($zbozi)) {
+                    $dual = $this->szb->zjistiDualsim($zbozi->getZbozi());
+                    $zbozi->setDualsim($dual->dualsim);
+                    echo json_encode($zbozi);
+                } else {
+                    echo json_encode(false);
+                }
+            } catch (\Exception $e) {
                 echo json_encode(false);
             }
         } else {
@@ -239,10 +232,9 @@ class zaznam extends Kontroler {
         }
     }
 
-    public function vratPosledniZaznamy($parametry = null) {
-        if (!empty($parametry['pocet']) && is_numeric($parametry['pocet'])) {
-            print_r($this->sz->vratZaznamy($parametry['pocet'], $_SESSION[SESSION_POBOCKA]));
-
+    public function vratPosledniZaznamy($pocet) {
+        if (!empty($pocet) && is_numeric($pocet)) {
+            return $this->sz->vratZaznamy($pocet, $_SESSION[SESSION_POBOCKA]);
         }
     }
 

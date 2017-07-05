@@ -18,23 +18,15 @@ use Lcobucci\JWT\Signer\Hmac\Sha256;
 
 class pobocka extends Kontroler {
 
-    protected $pobockyList;
+    /**
+     * @var Spravcepobocek
+     */
     private $sp;
-
-    private function vytvorSpravcePobocek() {
-        try {
-            $spravce = new spravcepobocek();
-        } catch (\PDOException $e) {
-            $handler = new Error();
-            $handler->database();
-            exit();
-        }
-        return $spravce;
-    }
 
     public function __construct() {
         $this->setSablonu('app/sablony/vychozi');
-        $this->sp = $this->vytvorSpravcePobocek();
+        $this->setPripojeni();
+        $this->sp = $this->vytvorSpravce("pobocek");
     }
 
     public function index() {
@@ -50,8 +42,8 @@ class pobocka extends Kontroler {
         $jmeno = empty($_POST['pobockyJmeno']) ? null : $_POST['pobockyJmeno'];
         $heslo = empty($_POST['pobockyHeslo']) ? null : hash("sha256", $_POST['pobockyHeslo']);
         if ($jmeno && $heslo) {
-            $sp = $this->vytvorSpravcePobocek();
-            $pobocka = $sp->vratPobocku($jmeno, $heslo);
+
+            $pobocka = $this->sp->vratPobocku($jmeno, $heslo);
             if ($pobocka) {
                 $this->nastavCookie($pobocka);
                 $scriptPresmerovani = "<script type='text/javascript'>$(document).ready(function(){setTimeout(function(){ location.href='pobocka' }, 3000);})</script>";

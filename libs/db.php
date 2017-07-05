@@ -9,25 +9,13 @@
 namespace libs;
 
 use PDO;
-use PDOException;
-
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
 
 class db {
 
     private $spojeni = null;
 
-    public function __construct($options = null) {
-$options = array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8");
-//        try {
-//            $opts = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION);
-            if (!$this->spojeni) {
-                $this->spojeni = new PDO(DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASS, $options);
-            }
-//        }catch(PDOException $e){
-//            print_r($e);
-//        }
+    public function __construct($spojeni) {
+        $this->spojeni = $spojeni;
     }
 
     public function dotazJeden($dotaz, $parametry = array()) {
@@ -60,10 +48,12 @@ $options = array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8");
     }
 
     public function dotazVsechnyObjekty($dotaz, $typ, $parametry = array()) {
+        $this->spojeni->setAttribute( PDO::ATTR_EMULATE_PREPARES, false );
         $stmt = $this->spojeni->prepare($dotaz);
-        $stmt->execute($parametry);
-        var_dump($stmt->fetchAll());
-        var_dump($parametry);
+        foreach ($parametry as $p) {
+            $stmt->bindParam(1, $p, PDO::PARAM_INT);
+        }
+        $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_CLASS, 'app\\modely\\' . $typ);
         return $stmt->fetchAll();
     }

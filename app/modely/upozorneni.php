@@ -9,7 +9,7 @@
 namespace app\modely;
 
 
-class upozorneni {
+class Upozorneni {
 
     private $typ;
     private $zprava;

@@ -8,6 +8,8 @@ if($_SERVER['SERVER_NAME'] == '127.0.0.1'){
 }
 
 if(ENVIRONMENT == 'DEV'){
+    define('DEBUG', true);
+    define('FORMTOKEN', 'formtoken');
     define('WEB_URL', '127.0.0.1');
     define('ROOT_DIR_FILES', '\\projects\\fandasoft\\');
     define('ROOT_DIR', '/projects/fandasoft/');

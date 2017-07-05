@@ -5,7 +5,7 @@
         <?php
         foreach ($pobockyList as $a) {
             ?>
-            <?php print_r($a) ?>
+
             <option value="<?= $a->getId() ?>"><?= $a->getIdPobocka() . ": " . $a->getMesto() . " - " . $a->getNazev() ?></option>
             <?php
         }
@@ -20,7 +20,7 @@
 
 <br>
 
-<a href="pobocka/zrus" class="btn btn-danger">zrus vybranou pobocku</a>
+<a href="pobocka/zrus" class="btn btn-danger">zrus aktualni pobocku</a>
 
 <script type="text/javascript">
     // fucking vochcavka ignorace autocomplete

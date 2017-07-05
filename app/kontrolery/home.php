@@ -9,6 +9,7 @@ class Home extends Kontroler {
 
     public function __construct() {
         $this->setSablonu('app/sablony/vychozi');
+//        $this->setPripojeni();
     }
 
     public function index(){
