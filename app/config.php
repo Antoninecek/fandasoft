@@ -19,6 +19,7 @@ if(ENVIRONMENT == 'DEV'){
     define('DB_NAME', 'sklad_db_jednodussi_n');
     define('DB_USER', 'root');
     define('DB_PASS', '');
+    //define('SESSION_CAS_PRIDANI');
     define('SESSION_POBOCKA', 'fandasoftpobocka');
     define('SESSION_PRIDEJ_PRIHLASENI', 'pridejprihlasen');
     define('SESSION_PRIDEJ_UZIVATEL', 'pridejuzivatel');

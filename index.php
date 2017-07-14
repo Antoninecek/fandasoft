@@ -4,7 +4,7 @@ use app\Bootstrap;
 
 
 require('app/config.php');
-require('app/error_handler.php');
+require_once('app/error_handler.php');
 
 //nastav autoloading
 spl_autoload_extensions('.php');

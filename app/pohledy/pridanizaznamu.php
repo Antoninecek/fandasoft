@@ -65,10 +65,108 @@
         } else {
             $('#formular-imei2').val('').prop('readonly', false);
         }
-
-        console.log($('#formular-selectbox').find(':selected').data("select") == "Vydej");
-        console.log($('#informace-dualsim').data("dual") == "true");
     }
+
+    // HLAVNI FUNKCE PRO KONTROLU ZMENY CETNOSTI
+    function cetnosti() {
+        if ($('#formular-heslo').val() != "" && $('#formular-selectbox').val() != null) {
+
+            // zmena textu tlacitka
+            $(this).val(function () {
+                return this.value === "JEDNORAZOVY" ? "VICENASOBNY" : "JEDNORAZOVY";
+            });
+
+            // vymazani inputu
+            if ($(this).val() === "JEDNORAZOVY") {
+                $('#formular-heslo, #formular-text').val(function () {
+                    return ""
+                });
+                // firenuti on change kvuli ochcavce
+                $('#formular-heslo').trigger("change");
+
+                $('#formular-selectbox').val(0);
+                informaceCetnost("pro zapamatovani typu, hesla a textu slouzi tlacitko CETNOST");
+            } else {
+                informaceCetnost("pro odhlaseni zmackni znovu tlacitko CETNOST");
+            }
+        } else {
+            $('#formular-heslo, #formular-selectbox').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+            informaceCetnost("<br>je potreba zadat typ a heslo");
+        }
+    }
+
+    // HLAVNI FUNKCE PRO VALIDACI IMEI A DISABLE KUSU
+    function validujImeiKusy(obj) {
+        if (validateIMEI(obj.val())) {
+            obj.css('color', 'green');
+        } else {
+            obj.css('color', 'red');
+        }
+        disableKusy()
+    }
+
+    function disableKusy() {
+        if ($('#formular-imei1').val() != "" || $('#formular-imei2').val() != "") {
+            $('#formular-kusy').val(1).prop('readonly', true);
+        } else {
+            $('#formular-kusy').prop('readonly', false);
+        }
+    }
+
+    function zobrazInfo(ean){
+        if (ean.val() != "") {
+            // ajax vrat json objekt zbozi
+            $.post("zaznam/vratInfoZbozi", {ean: ean.val()}, function (data, status) {
+                console.log(status);
+                if (data != "false") {
+                    var objekt = $.parseJSON(data);
+                    $('#ukaz-ora').val(objekt.zbozi);
+                    $('#ukaz-popis').val(objekt.popis);
+                    if (objekt.dualsim != "0") {
+                        $('#informace-dualsim').html('<span class="glyphicon glyphicon-phone"></span> DUALSIM <span class="glyphicon glyphicon-phone"></span>').data('dual', 'true');
+                    } else {
+                        $('#informace-dualsim').html('').data('dual', 'false');
+                    }
+                } else {
+                    $('#ukaz-ora').val("zkontroluj si ean");
+                    $('#ukaz-popis').val("");
+                    $('#informace-dualsim').html('').data('dual', 'false');
+                }
+            }).done(function () {
+//                disableImei2();
+            });
+
+//                $('#formular-submit-prijem, #formular-submit-vydej').prop('disabled', false);
+        } else {
+            disableImei2();
+            $('#informace-dualsim').html("").data('dual', 'false');
+            $('#ukaz-ora').val('');
+            $('#ukaz-popis').val('');
+//                $('#formular-submit-prijem, #formular-submit-vydej').prop('disabled', true);
+        }
+    }
+
+    <?php
+    if(!empty($formularZnovu)){
+    ?>
+    function defaultniFormular() {
+        // povoleni submitu
+        $('#prepinac-vydavani').val("<?= $formularCetnost ?>");
+        $('#formular-selectbox').val("<?= $formularSelect ?>");
+        $('#formular-text').val("<?= $formularText ?>");
+        $('#formular-faktura').val("<?= $formularFaktura ?>");
+        $('#formular-ean').val("<?= $formularEan ?>");
+        $('#formular-imei1').val("<?= $formularImei1 ?>");
+        $('#formular-imei2').val("<?= $formularImei2 ?>");
+        $('#formular-kusy').val("<?= $formularKusy ?>");
+
+        cetnosti();
+        disableKusy();
+        zobrazInfo($('#formular-ean'));
+    }
+    <?php
+    }
+    ?>
 
     $(document).ready(function () {
 
@@ -76,6 +174,14 @@
         ?>
         defaultniCetnost();
         <?php }
+        ?>
+
+        <?php
+        if(!empty($formularZnovu)){
+        ?>
+        defaultniFormular();
+        <?php
+        }
         ?>
 
         // default nastaveni pro info o cetnosti vydeje
@@ -93,32 +199,7 @@
         // prepinani textu na tlacitkach
         // ovladani pamatovani cetnostii
         $("#prepinac-vydavani").click(function () {
-
-            if ($('#formular-heslo').val() != "" && $('#formular-selectbox').val() != null) {
-
-                // zmena textu tlacitka
-                $(this).val(function () {
-                    return this.value === "JEDNORAZOVY" ? "VICENASOBNY" : "JEDNORAZOVY";
-                });
-
-                // vymazani inputu
-                if ($(this).val() === "JEDNORAZOVY") {
-                    $('#formular-heslo, #formular-text').val(function () {
-                        return ""
-                    });
-                    // firenuti on change kvuli ochcavce
-                    $('#formular-heslo').trigger("change");
-
-                    $('#formular-selectbox').val(0);
-                    informaceCetnost("pro zapamatovani typu, hesla a textu slouzi tlacitko CETNOST");
-                } else {
-                    informaceCetnost("pro odhlaseni zmackni znovu tlacitko CETNOST");
-                }
-            } else {
-                $('#formular-heslo, #formular-selectbox').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-                informaceCetnost("<br>je potreba zadat typ a heslo");
-            }
-
+            cetnosti();
         });
 
         $("#prepinac-skakani").click(function () {
@@ -139,13 +220,19 @@
                 $('#formular-selectbox').toggleClass('cerveny-stin');
             }
         }).on('click', function (e) {
-            if ($('#formular-selectbox').find(':selected').data("select") != $(this).val() || !validateIMEI($('#formular-imei1').val()) || !validateIMEI($('#formular-imei2').val())) {
+            if ($('#formular-selectbox').find(':selected').data("select") != $(this).val()) {
+                e.preventDefault();
+            } else if (!validateIMEI($('#formular-imei1').val()) || !validateIMEI($('#formular-imei2').val()) || $('#formular-imei1').val() === $('#formular-imei2').val()) {
+                $('#formular-imei1, #formular-imei2').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
                 e.preventDefault();
             } else if ($('#informace-dualsim').data("dual") == "true" && $('#formular-selectbox').find(':selected').data("select") == "Prijem" && ($('#formular-imei1').val() == "" || $('#formular-imei2').val() == "")) {
                 $('#formular-imei1, #formular-imei2').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
                 e.preventDefault();
             } else if ($('#informace-dualsim').data("dual") == "true" && $('#formular-selectbox').find(':selected').data("select") == "Vydej" && $('#formular-imei1').val() == "") {
                 $('#formular-imei1').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+                e.preventDefault();
+            } else if ($('#ukaz-ora').val() == "") {
+                $('#ukaz-ora').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
                 e.preventDefault();
             }
         });
@@ -175,57 +262,15 @@
         });
 
         // ajax
-        $('#formular-ean').on('focusout', function () {
-            if ($('#formular-ean').val() != "") {
-                // ajax vrat json objekt zbozi
-                $.post("zaznam/vratInfoZbozi", {ean: $(this).val()}, function (data, status) {
-                    console.log(status);
-                    if (data != "false") {
-                        var objekt = $.parseJSON(data);
-                        $('#ukaz-ora').val(objekt.zbozi);
-                        $('#ukaz-popis').val(objekt.popis);
-                        if (objekt.dualsim != "0") {
-                            $('#informace-dualsim').html('<span class="glyphicon glyphicon-phone"></span> DUALSIM <span class="glyphicon glyphicon-phone"></span>').data('dual', 'true');
-                            console.log($('#informace-dualsim').data('dual') + "a");
-                        } else {
-                            $('#informace-dualsim').html('').data('dual', 'false');
-                        }
-                    } else {
-                        $('#ukaz-ora').val("zkontroluj si ean");
-                        $('#ukaz-popis').val("");
-                        $('#informace-dualsim').html('').data('dual', 'false');
-                    }
-                }).done(function () {
-                    disableImei2();
-                });
-
-                $('#formular-submit-prijem, #formular-submit-vydej').prop('disabled', false);
-            } else {
-                disableImei2();
-                $('#informace-dualsim').html("").data('dual', 'false');
-                $('#ukaz-ora').val('');
-                $('#ukaz-popis').val('');
-                $('#formular-submit-prijem, #formular-submit-vydej').prop('disabled', true);
-            }
-
-
+        $('#formular-ean').on('focusout mouseout', function () {
+            // mouseout jen pri rucne!
+            zobrazInfo($(this));
         });
 
         // disable kusu pri vyplneni imei
         // zvalidovani imei
         $('#formular-imei1, #formular-imei2').on('focus change input', function () {
-
-            if (validateIMEI($(this).val())) {
-                $(this).css('color', 'green');
-            } else {
-                $(this).css('color', 'red');
-            }
-
-            if ($('#formular-imei1').val() != "" || $('#formular-imei2').val() != "") {
-                $('#formular-kusy').val(1).prop('readonly', true);
-            } else {
-                $('#formular-kusy').prop('readonly', false);
-            }
+            validujImeiKusy($(this));
         });
 
         // fucking vochcavka ignorace autocomplete
@@ -237,16 +282,34 @@
             }
         });
 
-        $('#tlacitko-zobraz-zaznamy').on('click', function () {
-            $.post("zaznam/vratPosledniZaznamy?pocet=10", null, function (data, status) {
-                console.log(data);
-            });
-        });
+//        $('#tlacitko-zobraz-zaznamy').on('click', function () {
+//            $.post("zaznam/vratPosledniZaznamy?pocet=10", null, function (data, status) {
+//                console.log(data);
+//            });
+//        });
 
         // zobraz zaznamy
         $('#tlacitko-zobraz-zaznamy').on('click', function () {
             $('#formular-container').hide('slow');
             $('#zaznamy-container').show();
+        });
+
+        // schovej zaznamy
+        $('#tlacitko-schovej-zaznamy').on('click', function () {
+            $('#formular-container').show('slow');
+            $('#zaznamy-container').hide('slow');
+        });
+
+        // pridani faktury
+        $('[data-fakturaid]').on('click', function () {
+            $('.js-form-zaznamy').hide();
+            $('.js-skryt').show();
+            var tdcko = $(this).parent();
+            var tdcko2 = tdcko.next();
+            var form = tdcko2.next();
+            tdcko.hide();
+            tdcko2.hide();
+            form.show();
         });
 
     })
@@ -366,12 +429,12 @@
                     <div class="col-sm-6">
                         <input id="formular-submit-prijem" name="submit" type="submit"
                                class="form-control btn btn-default"
-                               value="Prijem" disabled>
+                               value="Prijem">
                     </div>
                     <div class="col-sm-6">
                         <input id="formular-submit-vydej" name="submit" type="submit"
                                class="form-control btn btn-default"
-                               value="Vydej" disabled>
+                               value="Vydej">
                     </div>
                     <!--CETNOST-->
                     <input id="formular-cetnost" name="cetnost" type="hidden" value="">
@@ -417,35 +480,57 @@
         </div>
     </div>
 </div>
-<div class="container-fluid hidden" id="zaznamy-container">
-    <table class="table-hover">
-        <thead>
-        <th>EAN</th>
-        <th>ORA</th>
-        <th>IMEI 1</th>
-        <th>IMEI 2</th>
-        <th>KUSY</th>
-        <th>JMENO</th>
-        <th>TEXT</th>
-        <th>DATUM</th>
-        </thead>
-        <tbody>
-        <?php
-        foreach ($posledniZaznamy as $z) {
-            ?>
-            <tr>
-                <td><?= $z->getEan() ?></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <?php
-        }
-        ?>
-        </tbody>
-    </table>
+<div class="container-fluid" id="zaznamy-container" style="display: none;">
+    <div class="row">
+        <div class="col-sm-12">
+            <button id="tlacitko-schovej-zaznamy" class="btn btn-default">ZPET</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <table id="zaznamy-tabulka" class="table table-hover">
+                <thead>
+                <th>EAN</th>
+                <th>ORA</th>
+                <th>IMEI 1</th>
+                <th>IMEI 2</th>
+                <th>KUSY</th>
+                <th>JMENO</th>
+                <th>TEXT</th>
+                <th>TYP</th>
+                <th>FAKTURA</th>
+                <th>DATUM</th>
+                </thead>
+                <tbody>
+                <?php
+                foreach ($posledniZaznamy as $z) {
+                    ?>
+                    <tr>
+                        <td><?= $z->getEan() ?></td>
+                        <td><?= $z->getZbozi() ?></td>
+                        <td><?= $z->getImei1() ?></td>
+                        <td><?= $z->getImei2() ?></td>
+                        <td><?= $z->getKusy() ?></td>
+                        <td><?= $z->getJmeno() ?></td>
+                        <td><?= $z->getText() ?></td>
+                        <td><?= $z->getTyp() ?></td>
+                        <td class="js-skryt"><?= $z->getFaktura() == null ? '<button class="btn btn-default" data-fakturaid="' . $z->getId() . '">zadej</button>' : $z->getFaktura() ?></td>
+                        <td class="js-skryt"><?= $z->getDatum() ?></td>
+                        <td class="js-form-zaznamy" style="display: none;" colspan="2">
+                            <form class="form-inline" action="zaznam/faktura/" method="post">
+                                <button class="btn btn-info">potvrd</button>
+                                <input class="form-control" type="number" name="faktura" style="border-color: #5bc0de;"
+                                       placeholder="CISLO FAKTURY" required>
+                                <input class="form-control" type="hidden" name="idzaznamu" value="<?= $z->getId() ?>"
+                                       style="border-color: #5bc0de;" required>
+                            </form>
+                        </td>
+                    </tr>
+                    <?php
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

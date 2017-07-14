@@ -9,7 +9,7 @@
 namespace app\modely;
 
 
-class uzivatel {
+class Uzivatel {
 
     private $id, $oscislo, $jmeno, $heslo, $email, $aktivni, $admin, $datum, $pobocka;
 
@@ -164,6 +164,5 @@ class uzivatel {
     public function setPobocka($pobocka) {
         $this->pobocka = $pobocka;
     }
-
 
 }

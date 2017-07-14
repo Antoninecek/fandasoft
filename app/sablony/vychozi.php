@@ -32,13 +32,15 @@
                         </div>
                         <div class="col-sm-6">
                             <a href="pobocka"
-                               class="navbar-pobocka"><div><?= !empty($_SESSION[SESSION_POBOCKA]) ? $_SESSION[SESSION_POBOCKA]->getMesto() . '<br>' . $_SESSION[SESSION_POBOCKA]->getNazev() : 'vyber pobocku' ?></div></a>
+                               class="navbar-pobocka">
+                                <div><?= !empty($_SESSION[SESSION_POBOCKA]) ? $_SESSION[SESSION_POBOCKA]->getMesto() . '<br>' . $_SESSION[SESSION_POBOCKA]->getNazev() : 'vyber pobocku' ?></div>
+                            </a>
                         </div>
                     </div>
 
                 </div>
             </div>
-            <div class="col-sm-6" style="margin-top:5px">
+            <div class="col-sm-4" style="margin-top:5px">
                 <div class="row">
 
                     <ul class="nav navbar-nav hlavni-navigace">
@@ -71,6 +73,29 @@
                     </ul>
                 </div>
             </div>
+            <div class="col-sm-2 text-center" style="padding-top: 20px;">
+                <?php
+                if (!empty($_SESSION['uzivatel'])) {
+                    ?>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <span style="color: lightgrey;">PRAVE JE PRIHLASEN</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <span style="color: lightgrey; font-weight: bold;"><?= $_SESSION['uzivatel']->getJmeno() ?></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <span style="color: gray;"><a href="uzivatel/odhlaseni" style="color: lightgrey; text-decoration: underline;">odhlas me</a></span>
+                        </div>
+                    </div>
+                    <?php
+                }
+                ?>
+            </div>
             <div class="col-sm-2">
                 <div class="nav navbar-nav navbar-right text-center" style="padding: 10px 20px;">
                     <div style="color: gray;">
@@ -88,7 +113,7 @@
     <?php if (isset($upozorneni)) { ?>
         <div class="row">
             <div class="alert alert-<?= $upozorneni->getTyp() ?>">
-                <strong><?= $upozorneni->getZprava() ?></strong>
+                <div id="upozorneni-text"><strong><?= $upozorneni->getZprava() ?></strong></div>
             </div>
         </div>
     <?php } ?>

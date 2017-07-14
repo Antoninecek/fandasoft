@@ -54,23 +54,23 @@ class zaznam extends Kontroler {
     public function prehled($parametry = null) {
 
         $content = new Pohled('app/pohledy/prehled');
-
-        if (!empty($parametry)) {
-
-            if (isset($parametry['ean'])) {
-                $zaznamy = $this->sz->vratVsechnyZaznamyEan($parametry['ean']);
-            } elseif (isset($parametry['ora'])) {
-                $zbozi = $this->szb->vratZboziOra($parametry['ora']);
-                $zaznamy = $this->sz->vratVsechnyZaznamyEan($zbozi->getEan());
+        $id = !empty($parametry['id']) ? trim($parametry['id']) : null;
+        if (is_numeric($id)) {
+            if (strlen((string)$id) > 10) {
+                $zaznamy = $this->sz->vratVsechnyZaznamyEan($id, $_SESSION[SESSION_POBOCKA]->getId());
+            } else {
+                $zbozi = $this->szb->vratZboziOra($id);
+                if (is_object($zbozi)) {
+                    $zaznamy = $this->sz->vratVsechnyZaznamyEan($zbozi->getEan(), $_SESSION[SESSION_POBOCKA]->getId());
+                }
             }
 
             if (!empty($zaznamy)) {
-                $this->sablona->set('upozorneni', new Upozorneni('success', "celkem " . sizeof($zaznamy) . " zaznamu"));
+                $this->sablona->set('upozorneni', new Upozorneni('success', "celkem " . sizeof($zaznamy) . " zaznamu pro dotaz " . $id));
                 $content->set('zaznamy', $zaznamy);
             } else {
-                $this->sablona->set('upozorneni', new Upozorneni('warning', "zadny zaznam"));
+                $this->sablona->set('upozorneni', new Upozorneni('warning', "zadny zaznam pro dotaz " . $id));
             }
-
         }
 
         $this->sablona->set('titulek', 'Prehled');
@@ -94,6 +94,54 @@ class zaznam extends Kontroler {
         return $vstupy;
     }
 
+
+    public function oprav($parametry = null) {
+
+        if (!empty($parametry['formtoken']) && $this->validateFormToken($parametry['formtoken'])) {
+            $uzivatel = $this->su->overUzivateleId(array('id' => $parametry['jmeno'], 'heslo' => hash('sha256', $parametry['heslo'])));
+            if (is_object($uzivatel)) {
+                $ean = null;
+                $imei1 = null;
+                $imei2 = null;
+                $kusy = null;
+                $jmeno = null;
+                $text = null;
+                $typ = null;
+                $faktura = null;
+                $pobocka = null;
+                $vstupy = $this->zkontrolujVstupy($parametry);
+                extract($vstupy);
+                $result = $this->sz->pridejZaznam($ean, $imei1, $imei2, $kusy * -1, $jmeno, "OPRAVA - " . $text, $typ, $faktura, $pobocka);
+                if ($result['ovlivneno']) {
+                    $this->pridej(array('upozorneni' => new Upozorneni('success', "opraveno")));
+                } else {
+                    $this->pridej(array('upozorneni' => new Upozorneni('danger', "neopraveno, oprav to sam/a")));
+                }
+            } else {
+                $this->pridej(array('upozorneni' => new Upozorneni('warning', "spatne heslo, oprav to sam/a")));
+            }
+        } elseif (!empty($parametry['id']) && $_SESSION['casProOpravu'] > time()) {
+            $zaznam = $this->sz->vratZaznam($parametry['id']);
+            $uzivatel = $this->su->vratUzivatele($zaznam->getJmeno());
+            $token = $this->getFormToken();
+            $content = new Pohled('app/pohledy/opravenizaznamu');
+            $content->set('zaznam', $zaznam);
+            $content->set('uzivatel', $uzivatel);
+            $content->set('formtoken', $token);
+            $_SESSION[FORMTOKEN] = $token;
+            $this->sablona->set('titulek', 'Oprava');
+            $this->sablona->set('content', $content->rendruj());
+            echo $this->sablona->rendruj();
+            exit();
+        } elseif ($_SESSION['casProOpravu'] <= time()) {
+            $this->pridej(array('upozorneni' => new Upozorneni('warning', "pozde, zadej vse znovu")));
+            exit();
+        } else {
+            $this->index();
+        }
+
+    }
+
     /**
      * kontrola zadani vstupu
      * kontrola neprazdnych vstupu
@@ -102,19 +150,28 @@ class zaznam extends Kontroler {
      */
     public function pridej($parametry = null) {
 
-        $this->sablona->set('titulek', 'Pridej');
+        if (!empty($parametry['titulek'])) {
+            $this->sablona->set('titulek', $parametry['titulek']);
+        } else {
+            $this->sablona->set('titulek', 'Pridej');
+        }
+
+        if (!empty($parametry['upozorneni'])) {
+            $this->sablona->set('upozorneni', $parametry['upozorneni']);
+        }
+
         $content = new Pohled('app/pohledy/pridanizaznamu');
-        $posledniZaznamy = $this->vratPosledniZaznamy(10);
-//
-        $content->set('posledniZaznamy', $posledniZaznamy);
 
 
-        if (!empty($parametry['token']) && false) {
+        if (!empty($parametry['token'])) {
 
             if (!$this->validateFormToken($parametry['token'])) {
                 $this->pridej();
                 exit();
             }
+
+            // pridani 20 sekund pro moznou opravu zaznamu
+            $_SESSION['casProOpravu'] = time() + 20;
 
             $select = '';
             $text = '';
@@ -157,9 +214,11 @@ class zaznam extends Kontroler {
                         // setnuti kusu do minusu
                         $kusy *= -1;
 
-                        $ovlivneno = $this->sz->pridejZaznam($ean, $imei1, $imei2, $kusy, $uzivatel->getId(), $text, $select, $faktura, $_SESSION[SESSION_POBOCKA]);
-                        if ($ovlivneno) {
-                            $this->sablona->set('upozorneni', new Upozorneni('success', "zbozi vydano"));
+                        $result = $this->sz->pridejZaznam($ean, $imei1, $imei2, $kusy, $uzivatel->getId(), $text, $select, $faktura, $_SESSION[SESSION_POBOCKA]->getId());
+
+                        if ($result['ovlivneno']) {
+                            $textOpravy = "zaznam/oprav/?id=" . $result['lastid'];
+                            $this->sablona->set('upozorneni', new Upozorneni('success', "zbozi vydano <a id='oprava-zaznamu' href='$textOpravy'>OPRAV ZAZNAM</a>"));
                         } else {
                             $this->sablona->set('upozorneni', new Upozorneni('danger', "neco se podelalo u vydeje"));
                         }
@@ -174,10 +233,11 @@ class zaznam extends Kontroler {
                         }
                         // pokud rovno 0 nebo null, muzem pridat
                         if ($suma == 0) {
-                            $ovlivneno = $this->sz->pridejZaznam($ean, $imei1, $imei2, $kusy, $uzivatel->getId(), $text, $select, $faktura, $_SESSION[SESSION_POBOCKA]);
+                            $result = $this->sz->pridejZaznam($ean, $imei1, $imei2, $kusy, $uzivatel->getId(), $text, $select, $faktura, $_SESSION[SESSION_POBOCKA]->getId());
 
-                            if ($ovlivneno) {
-                                $this->sablona->set('upozorneni', new Upozorneni('success', "zbozi pridano"));
+                            if ($result['ovlivneno']) {
+                                $textOpravy = "zaznam/oprav/?id=" . $result['lastid'];
+                                $this->sablona->set('upozorneni', new Upozorneni('success', "zbozi pridano <a href='$textOpravy'>OPRAV ZAZNAM</a>"));
                             } else {
                                 $this->sablona->set('upozorneni', new Upozorneni('danger', "neco se podelalo u prijmu"));
                             }
@@ -196,12 +256,23 @@ class zaznam extends Kontroler {
 
                 } else {
                     $this->sablona->set('upozorneni', new Upozorneni('danger', "spatne heslo"));
+                    $content->set('formularZnovu', true);
+                    $content->set('formularFaktura', $faktura);
+                    $content->set('formularEan', $ean);
+                    $content->set('formularImei1', $imei1);
+                    $content->set('formularImei2', $imei2);
+                    $content->set('formularKusy', $kusy);
+                    $content->set('formularText', $text);
+                    $content->set('formularSelect', $select);
+                    $content->set('formularCetnost', $cetnost);
                 }
             } else {
                 $this->sablona->set('upozorneni', new Upozorneni('danger', "neco mi chybi"));
             }
         }
 
+        $posledniZaznamy = $this->vratPosledniZaznamy(10);
+        $content->set('posledniZaznamy', $posledniZaznamy);
         $formToken = $this->getFormToken();
         $content->set('formToken', $formToken);
         $_SESSION[FORMTOKEN] = $formToken;
@@ -209,6 +280,24 @@ class zaznam extends Kontroler {
         $this->sablona->set('content', $content->rendruj());
 
         echo $this->sablona->rendruj();
+    }
+
+    public function faktura($parametry = null) {
+        $id = !empty($parametry['idzaznamu']) ? $parametry['idzaznamu'] : null;
+        $cislo = !empty($parametry['faktura']) ? trim($parametry['faktura']) : null;
+        if ($id && is_numeric($cislo)) {
+            $zaznam = $this->sz->vratZaznam($id);
+            if (is_object($zaznam) && $zaznam->getFaktura() == null) {
+                $ovlivneno = $this->sz->updatniFakturu($id, $cislo);
+                if ($ovlivneno) {
+                    $this->pridej(array('upozorneni' => new Upozorneni('success', "faktura vlozena")));
+                } else {
+                    $this->pridej(array('upozorneni' => new Upozorneni('danger', "faktura nevlozena")));
+                }
+            } else {
+                $this->pridej(array('upozorneni' => new Upozorneni('warning', "zaznam neni, nebo uz je nejaka faktura prirazena")));
+            }
+        }
     }
 
     public function vratInfoZbozi() {
@@ -219,7 +308,11 @@ class zaznam extends Kontroler {
                 $zbozi = $this->szb->vratZboziEan($vstupy['ean']);
                 if (is_object($zbozi)) {
                     $dual = $this->szb->zjistiDualsim($zbozi->getZbozi());
-                    $zbozi->setDualsim($dual->dualsim);
+                    if (is_object($dual)) {
+                        $zbozi->setDualsim($dual->dualsim);
+                    } else {
+                        $zbozi->setDualsim(0);
+                    }
                     echo json_encode($zbozi);
                 } else {
                     echo json_encode(false);

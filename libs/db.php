@@ -41,19 +41,29 @@ class db {
         return $vysledek[0];
     }
 
-    public function dotaz($dotaz, $parametry = array()) {
+    /**
+     *
+     * @param $dotaz
+     * @param array $parametry
+     * @param $typ (default null | 1)
+     * @return default ovlivneno | 1 array(ovlivneno, lastid)
+     */
+    public function dotaz($dotaz, $parametry = array(), $typ = null) {
         $navrat = $this->spojeni->prepare($dotaz);
         $navrat->execute($parametry);
-        return $navrat->rowCount();
+        $lastid = $this->spojeni->lastInsertId();
+        $result = $navrat->rowCount();
+        switch($typ){
+            case 1:
+                return array("ovlivneno" => $result, "lastid" => $lastid);
+            default:
+                return $result;
+        }
     }
 
     public function dotazVsechnyObjekty($dotaz, $typ, $parametry = array()) {
-        $this->spojeni->setAttribute( PDO::ATTR_EMULATE_PREPARES, false );
         $stmt = $this->spojeni->prepare($dotaz);
-        foreach ($parametry as $p) {
-            $stmt->bindParam(1, $p, PDO::PARAM_INT);
-        }
-        $stmt->execute();
+        $stmt->execute($parametry);
         $stmt->setFetchMode(PDO::FETCH_CLASS, 'app\\modely\\' . $typ);
         return $stmt->fetchAll();
     }

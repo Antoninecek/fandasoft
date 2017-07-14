@@ -46,8 +46,8 @@ class pobocka extends Kontroler {
             $pobocka = $this->sp->vratPobocku($jmeno, $heslo);
             if ($pobocka) {
                 $this->nastavCookie($pobocka);
-                $scriptPresmerovani = "<script type='text/javascript'>$(document).ready(function(){setTimeout(function(){ location.href='pobocka' }, 3000);})</script>";
-                $this->sablona->set('upozorneni', new Upozorneni('success', 'pobocka nastavena - pro dokonceni pockej 3 vteriny' . $scriptPresmerovani));
+                $scriptPresmerovani = "<script type='text/javascript'>$(document).ready(function(){setTimeout(function(){ location.href='home' }, 2000);})</script>";
+                $this->sablona->set('upozorneni', new Upozorneni('success', 'pobocka nastavena - pro dokonceni pockej 2 vteriny' . $scriptPresmerovani));
             } else {
                 $this->sablona->set('upozorneni', new Upozorneni('danger', 'spatne udaje o pobocce'));
             }

@@ -9,15 +9,29 @@
 namespace app\modely;
 
 
-class ukol {
-    private $id, $ean, $imei, $imei1, $kusy, $jmeno, $text, $typ, $faktura, $datum, $pobocka;
+class Zaznam {
+    private $id, $zbozi, $ean, $imei1, $imei2, $kusy, $jmeno, $text, $typ, $faktura, $datum, $pobocka;
+
+    /**
+     * @return mixed
+     */
+    public function getZbozi() {
+        return $this->zbozi;
+    }
+
+    /**
+     * @param mixed $zbozi
+     */
+    public function setZbozi($zbozi) {
+        $this->zbozi = $zbozi;
+    }
 
     /**
      * ukol constructor.
      * @param $id
      * @param $ean
-     * @param $imei
      * @param $imei1
+     * @param $imei2
      * @param $kusy
      * @param $jmeno
      * @param $text
@@ -26,12 +40,12 @@ class ukol {
      * @param $datum
      * @param $pobocka
      */
-    public function __construct($id = null, $ean = null, $imei = null, $imei1 = null, $kusy = null, $jmeno = null, $text = null, $typ = null, $faktura = null, $datum = null, $pobocka = null) {
+    public function __construct($id = null, $ean = null, $imei1 = null, $imei2 = null, $kusy = null, $jmeno = null, $text = null, $typ = null, $faktura = null, $datum = null, $pobocka = null) {
         if ($id != null) {
             $this->id = $id;
             $this->ean = $ean;
-            $this->imei = $imei;
             $this->imei1 = $imei1;
+            $this->imei2 = $imei2;
             $this->kusy = $kusy;
             $this->jmeno = $jmeno;
             $this->text = $text;
@@ -73,20 +87,6 @@ class ukol {
     /**
      * @return null
      */
-    public function getImei() {
-        return $this->imei;
-    }
-
-    /**
-     * @param null $imei
-     */
-    public function setImei($imei) {
-        $this->imei = $imei;
-    }
-
-    /**
-     * @return null
-     */
     public function getImei1() {
         return $this->imei1;
     }
@@ -96,6 +96,20 @@ class ukol {
      */
     public function setImei1($imei1) {
         $this->imei1 = $imei1;
+    }
+
+    /**
+     * @return null
+     */
+    public function getImei2() {
+        return $this->imei2;
+    }
+
+    /**
+     * @param null $imei2
+     */
+    public function setImei2($imei2) {
+        $this->imei2 = $imei2;
     }
 
     /**

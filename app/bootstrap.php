@@ -34,12 +34,12 @@ class Bootstrap {
                     return true;
                 } else {
                     $handler = new kontrolery\Error();
-                    $handler->notFound();
+                    $handler->error404();
                     return true;
                 }
             } else {
                 $handler = new kontrolery\Error();
-                $handler->notFound();
+                $handler->error404();
                 return true;
             }
         } else {
@@ -110,9 +110,12 @@ class Bootstrap {
 
         }
         elseif ($this->kontroler != "pobocka" && $this->kontroler != "home") {
+            $maxlifetime = ini_get("session.gc_maxlifetime");
+            var_dump($maxlifetime);
             $this->kontroler = 'pobocka';
             $this->akce = '';
             $this->parametry = '';
+            unset($_SESSION['uzivatel']);
             unset($_SESSION[SESSION_POBOCKA]);
         }
     }

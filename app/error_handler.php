@@ -1,6 +1,7 @@
 <?php
 namespace app;
 
+use app\kontrolery\Error;
 use ErrorException;
 use Exception;
 
@@ -16,7 +17,8 @@ function log_error($num, $str, $file, $line, $context = null) {
  * Uncaught exception handler.
  */
 function log_exception(Exception $e) {
-    $handler = new kontrolery\Error();
+    $handler = new Error();
+
     if (DEBUG) {
         $handler->debugError($e);
     } else {
