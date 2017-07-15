@@ -17,10 +17,11 @@
                 <input class="form-control" type="email" name="email" placeholder="EM@IL" required>
                 <div class="form-group form-inline">
                     <label for="formular-heslo" id="label-heslo"></label>
+                    <input type="text" hidden> <!-- ochcavka autofillu -->
                     <input id="formular-heslo" type="text" class="form-control" name="heslo" placeholder="HESLO"
                            required>
                     <p class="form-text text-muted">
-                        Tve heslo se bude skladat z osobniho cisla + tebou vymysleneho retezce znaku.
+                        Tve heslo se bude skladat z osobniho cisla + tebou vymysleneho retezce znaku. Budes ho pouzivat pri kazdem prijmu/vydeji.
                     </p>
                 </div>
                 <div class="text-center">

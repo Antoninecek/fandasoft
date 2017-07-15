@@ -37,11 +37,10 @@
     <tr>
         <td>Heslo EAN13</td>
         <td id="js-button">
-            <button id="button-zobraz-ean" class="btn btn-info">zobraz</button>
+            <button id="button-zobraz-ean" class="btn btn-info">ZISKEJ</button>
         </td>
         <td id="js-potvrzeni" style="display: none;">
-            // nova stranka s eanem a moznosti zvoleni velikosti
-            <form class="form-inline" method="post" action="uzivatel/ziskejEanHeslo/?vyska=100&sirka=100">
+            <form class="form-inline" method="post" action="uzivatel/ziskejEanHeslo/">
                 <input id="formular-heslo" class="form-control" type="text" name="heslo" placeholder="HESLO" required>
                 <input class="btn btn-info" type="submit" value="potvrd">
             </form>

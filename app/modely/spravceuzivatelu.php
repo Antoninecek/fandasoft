@@ -56,15 +56,6 @@ class SpravceUzivatelu extends Spravce{
         return $this->db->dotazObjekt('SELECT * FROM uzivatele WHERE BINARY heslo = BINARY ? AND pobocka = ?', 'Uzivatel', array($heslo, $pobocka->getIdPobocka()));
     }
 
-    /**
-     * insert
-     * @param $udaje
-     * @return string
-     */
-    public function zapisUzivatele($udaje) {
-        return $this->db->dotazId('INSERT INTO uzivatele (jmeno, heslo, opravneni) VALUES (?, ?, ?)', array($udaje['jmeno'], $udaje['heslo'], $udaje['opravneni']));
-    }
-
     public function zmenHeslo($id, $heslo){
         return $this->db->dotaz('update uzivatele set heslo = ? where id = ?', array($heslo, $id));
     }
@@ -95,7 +86,15 @@ class SpravceUzivatelu extends Spravce{
      * @return Uzivatel
      */
     public function pridejUzivatele($oscislo, $jmeno, $heslo, $email){
-        return $this->db->dotazObjekt('insert into uzivatele (oscislo, jmeno, heslo, email) values (?, ?, ?, ?)', 'Uzivatel', array($oscislo, $jmeno, $heslo, $email));
+        return $this->db->dotaz('insert into uzivatele (oscislo, jmeno, heslo, email) values (?, ?, ?, ?)', array($oscislo, $jmeno, $heslo, $email));
+    }
+
+    public function zjistiUnikatnostOscisla($oscislo){
+        return $this->db->dotazObjekt('select * from uzivatele where oscislo = ?', 'Uzivatel', array($oscislo));
+    }
+
+    public function vratAktivniUzivatele($pobocka){
+        return $this->db->dotazVsechnyObjekty('select * from uzivatele where pobocka = ?', 'Uzivatel', array($pobocka));
     }
 
 }

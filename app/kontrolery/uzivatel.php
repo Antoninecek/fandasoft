@@ -12,6 +12,8 @@ use libs\Kontroler;
 use libs\Pohled;
 use app\modely\Spravceuzivatelu;
 use app\modely\Upozorneni;
+use Picqer\Barcode\BarcodeGeneratorHTML;
+use Picqer\Barcode\Exceptions\InvalidCheckDigitException;
 
 /**
  * Description of UzivatelKontroler
@@ -188,7 +190,22 @@ class Uzivatel extends Kontroler {
         return true;
     }
 
-    public function pridej($parametry = null) {
+    public function povys($parametry = null) {
+        if (!$this->su->jePrihlasen()) {
+            $this->index();
+            return true;
+        } elseif (empty($parametry)) {
+            $seznam = $this->su->vratAktivniUzivatele($_SESSION[SESSION_POBOCKA]->getIDPobocka());
+            $this->sablona->set('titulek', 'Seznam Uzivatelu');
+            $content = new Pohled('app/pohledy/seznamuzivatelu');
+            $content->set('seznam', $seznam);
+            $this->sablona->set('content', $content->rendruj());
+            echo $this->sablona->rendruj();
+        }
+        return true;
+    }
+
+    public function pridejuzivatele($parametry = null) {
         if (!$this->su->jePrihlasen()) {
             $this->index();
             return true;
@@ -205,13 +222,15 @@ class Uzivatel extends Kontroler {
             $heslo = !empty($parametry['heslo']) ? $parametry['heslo'] : null;
             $email = !empty($parametry['email']) ? $pur->purify($parametry['email']) : null;
 
-            if (is_numeric($oscislo) && $jmeno && $heslo && $email) {
-                $uzivatel = $this->su->pridejUzivatele($oscislo, $jmeno, hash('sha256', $heslo), $email);
-                if (is_object($uzivatel)) {
+            if (is_numeric($oscislo) && $jmeno && $heslo && $email && $this->su->zjistiUnikatnostOscisla($oscislo) == false) {
+                $result = $this->su->pridejUzivatele($oscislo, $jmeno, hash('sha256', $heslo), $email);
+                if ($result) {
                     $this->sablona->set('upozorneni', new Upozorneni('success', 'Uzivatel byl pridan.'));
                 } else {
                     $this->sablona->set('upozorneni', new Upozorneni('danger', 'Uzivatel nebyl pridan.'));
                 }
+            } else {
+                $this->sablona->set('upozorneni', new Upozorneni('danger', 'Osobni cislo neni cislo, nebo jiz je v databazi.'));
             }
 
             $this->sablona->set('titulek', 'Pridej uzivatele');
@@ -233,6 +252,85 @@ class Uzivatel extends Kontroler {
         $this->sablona->set('titulek', 'Odhlaseni');
         $this->sablona->set('content', $content->rendruj());
         echo $this->sablona->rendruj();
+    }
+
+    public function ziskejEanHeslo($parametry = null) {
+        $vyska = !empty($parametry['vyska']) ? $parametry['vyska'] : null;
+        $sirka = !empty($parametry['sirka']) ? $parametry['sirka'] : null;
+        $heslo1 = !empty($parametry['heslo1']) ? $parametry['heslo1'] : null;
+        $heslo2 = !empty($parametry['heslo2']) ? $parametry['heslo2'] : null;
+        $heslo = !empty($parametry['heslo']) ? $parametry['heslo'] : null;
+
+        $content = new Pohled('app/pohledy/uzivatelean');
+
+        if (!$this->su->jePrihlasen()) {
+            $this->index();
+            return true;
+        } elseif ($vyska && $sirka && $heslo1 && $heslo2) {
+            if (is_numeric($heslo1) && strlen((string)$heslo1) == 12 && $heslo1 === $heslo2) {
+                $generator = new BarcodeGeneratorHTML();
+                try {
+                    $heslo = $heslo1 . $this->ean_checkdigit($heslo1);
+                    if (!$this->su->jeValidniHeslo($heslo)) {
+                        throw new InvalidCheckDigitException('Spatny format hesla');
+                    }
+                    $uzivatel = $this->su->zmenHeslo($_SESSION['uzivatel']->getId(), hash('sha256', $heslo));
+                    if (!$uzivatel) {
+                        throw new InvalidCheckDigitException('Selhal zapis do db');
+                    }
+                    $ean = $generator->getBarcode($heslo, $generator::TYPE_EAN_13, $sirka, $vyska);
+                    $content = new Pohled('app/pohledy/uzivatelean');
+                    $this->sablona->set('titulek', 'Ean Heslo');
+                    $content->set('eankod', $ean);
+                    $content->set('eancislo', $heslo);
+                    $this->sablona->set('content', $content->rendruj());
+                    echo $this->sablona->rendruj();
+                    return true;
+                } catch (InvalidCheckDigitException $e) {
+                    $this->sablona->set('upozorneni', new Upozorneni('danger', 'Nelze vytvorit EAN kod.'));
+                }
+            } else {
+                $this->sablona->set('upozorneni', new Upozorneni('danger', 'Heslo neni cislo, heslo nema 12 cisel, nebo se hesla neshoduji.'));
+            }
+        } elseif ($heslo) {
+            $uzivatel = $this->su->overUzivatele($_SESSION['uzivatel']->getOscislo(), hash('sha256', $heslo), $_SESSION['uzivatel']->getPobocka());
+
+            if (!is_object($uzivatel)) {
+                $this->sablona->set('upozorneni', new Upozorneni('danger', 'Spatne heslo'));
+                $content = new Pohled('app/pohledy/uzivatel');
+                $this->sablona->set('titulek', 'Uzivatel');
+                $this->sablona->set('content', $content->rendruj());
+                echo $this->sablona->rendruj();
+                return true;
+            }
+            $generator = new BarcodeGeneratorHTML();
+            try {
+                $ean = $generator->getBarcode($heslo, $generator::TYPE_EAN_13, 2, 30);
+                $content->set('eankod', $ean);
+                $content->set('eancislo', $heslo);
+            } catch (InvalidCheckDigitException $e) {
+
+            }
+        }
+
+
+        $this->sablona->set('titulek', 'Uzivatel');
+        $this->sablona->set('content', $content->rendruj());
+        echo $this->sablona->rendruj();
+        return true;
+    }
+
+    /**
+     * @param $code
+     * @return int
+     */
+    private function ean_checkdigit($code) {
+        $code = str_pad($code, 12, "0", STR_PAD_LEFT);
+        $sum = 0;
+        for ($i = (strlen($code) - 1); $i >= 0; $i--) {
+            $sum += (($i % 2) * 2 + 1) * $code[$i];
+        }
+        return (10 - ($sum % 10));
     }
 
 }
