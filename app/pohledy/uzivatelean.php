@@ -14,7 +14,7 @@
             <p>Abys mohl/a vyuzivat k prihlaseni verzi hesla s EANem, potrebujes si zvolit heslo, ktere bude presne 12
                 cislic, posledni cislice ti bude pridelena.</p>
             <form class="form-inline" action="uzivatel/ziskejEanHeslo" method="post" autocomplete="off">
-                <input class="form-control" type="text" name="heslo1" pattern="[0-9]{12}" placeholder="HESLO" required>
+                <input class="form-control" type="text" name="heslo1" pattern="[0-9]{12}" placeholder="NOVE HESLO" required>
                 <input class="form-control" type="text" name="heslo2" pattern="[0-9]{12}" placeholder="POTVRD HESLO" required>
                 <input type="hidden" name="sirka" value="2">
                 <input type="hidden" name="vyska" value="30">

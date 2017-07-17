@@ -12,17 +12,24 @@
         <div class="col-sm-4 col-sm-offset-4 text-center">
             <h1>PRIDEJ UZIVATELE</h1>
             <form action="uzivatel/pridejuzivatele" method="post" autocomplete="off">
-                <input id="oscislo" class="form-control" type="number" name="oscislo" placeholder="OSOBNI CISLO" required>
+                <input id="oscislo" class="form-control" type="number" name="oscislo" placeholder="OSOBNI CISLO"
+                       required>
                 <input class="form-control" type="text" name="jmeno" placeholder="JMENO" required>
                 <input class="form-control" type="email" name="email" placeholder="EM@IL" required>
                 <div class="form-group form-inline">
-                    <label for="formular-heslo" id="label-heslo"></label>
                     <input type="text" hidden> <!-- ochcavka autofillu -->
                     <input id="formular-heslo" type="text" class="form-control" name="heslo" placeholder="HESLO"
                            required>
                     <p class="form-text text-muted">
-                        Tve heslo se bude skladat z osobniho cisla + tebou vymysleneho retezce znaku. Budes ho pouzivat pri kazdem prijmu/vydeji.
+                        Heslo budes pouzivat pri kazdem prijmu/vydeji.<br>
+                        Podminky pro heslo:
                     </p>
+                    <ul class="form-text text-muted">
+                        <li>heslo musi zacinat tvym osobnim cislem</li>
+                        <li>heslo musi byt delsi jak tve osobni cislo</li>
+                        <li>heslo musi obsahovat pouze sadu cislic [0-9] a znaku [a-zA-Z]</li>
+                    </ul>
+
                 </div>
                 <div class="text-center">
                     <input type="submit" class="btn btn-default" value="PRIDEJ">
@@ -44,9 +51,9 @@
             }
         });
 
-        $('#oscislo').on('input', function(){
-           $('#label-heslo').html($(this).val());
-        });
+//        $('#oscislo').on('input', function(){
+//           $('#label-heslo').html($(this).val());
+//        });
 
     });
 </script>

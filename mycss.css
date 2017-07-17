@@ -17,6 +17,7 @@ body {
 
 #content {
     min-height: calc(100vh - 157px);
+    margin-bottom: 20px;
 }
 
 footer {

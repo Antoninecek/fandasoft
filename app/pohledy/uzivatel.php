@@ -14,8 +14,8 @@
             <?php
             if ($_SESSION['uzivatel']->getAdmin()) {
                 ?>
-                <li><a href="uzivatel/pridej">pridej uzivatele</a></li>
-                <li><a href="uzivatel/povys">povys uzivatele</a></li>
+                <li><a href="uzivatel/pridejuzivatele">pridej uzivatele</a></li>
+                <li><a href="uzivatel/povys">zmen prava uzivatele</a></li>
                 <li><a href="uzivatel/resetuj">resetuj heslo uzivatele</a></li>
                 <?php
             }

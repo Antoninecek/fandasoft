@@ -102,16 +102,14 @@ class Bootstrap {
             $this->presmeruj();
         }
 
-
     }
+
 
     private function presmeruj() {
         if($this->kontroler == "zaznam" && $this->akce == "vratInfoZbozi"){
 
         }
         elseif ($this->kontroler != "pobocka" && $this->kontroler != "home") {
-            $maxlifetime = ini_get("session.gc_maxlifetime");
-            var_dump($maxlifetime);
             $this->kontroler = 'pobocka';
             $this->akce = '';
             $this->parametry = '';

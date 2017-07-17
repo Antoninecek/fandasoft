@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: František
- * Date: 15.07.2017
- * Time: 14:27
+ * Date: 17.07.2017
+ * Time: 12:45
  */
 ?>
 
@@ -31,10 +31,10 @@
                         <td><?= $zaznam->getAdmin() ?></td>
                         <td><?= $zaznam->getDatum() ?></td>
                         <td>
-                            <button class="btn btn-info">ZMENA PRAV</button>
-                            <form class="form-inline" method="post" action="uzivatel/povys/" style="display: none;" autocomplete="off">
+                            <button class="btn btn-info">RESETUJ</button>
+                            <form class="form-inline" method="post" action="uzivatel/resetuj/" style="display: none;" autocomplete="off">
                                 <input class="formular-heslo form-control" type="text" name="heslo"
-                                       placeholder="HESLO" required>
+                                       placeholder="TVE HESLO" required>
                                 <input type="number" name="id" value="<?= $zaznam->getId() ?>" hidden>
                                 <input class="btn btn-info" type="submit" value="potvrd">
                             </form>

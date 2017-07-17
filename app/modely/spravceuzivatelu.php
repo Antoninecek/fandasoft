@@ -18,7 +18,7 @@ class SpravceUzivatelu extends Spravce{
      * @return mixed
      */
     public function vratId($jmeno) {
-        return $this->db->dotazJeden('SELECT id FROM Uzivatele WHERE jmeno = ?', array($jmeno));
+        return $this->db->dotazJeden('SELECT id FROM uzivatele WHERE jmeno = ?', array($jmeno));
     }
 
     /**
@@ -26,7 +26,7 @@ class SpravceUzivatelu extends Spravce{
      * @return Uzivatel
      */
     public function vratUzivatele($id) {
-        return $this->db->dotazObjekt('SELECT * FROM Uzivatele WHERE id = ?', 'Uzivatel', array($id));
+        return $this->db->dotazObjekt('SELECT * FROM uzivatele WHERE id = ?', 'Uzivatel', array($id));
     }
 
     /**
@@ -72,10 +72,11 @@ class SpravceUzivatelu extends Spravce{
     /**
      * validace noveho hesla ve spravnem tvaru s nalezitostmi
      * @param $heslo
+     * @param $oscislo
      * @return bool
      */
-    public function jeValidniHeslo($heslo){
-        return true;
+    public function jeValidniHeslo($oscislo, $heslo){
+        return preg_match("/^" . $oscislo . "[0-9a-zA-Z]+/", $heslo) ? true : false;
     }
 
     /**
@@ -95,6 +96,14 @@ class SpravceUzivatelu extends Spravce{
 
     public function vratAktivniUzivatele($pobocka){
         return $this->db->dotazVsechnyObjekty('select * from uzivatele where pobocka = ?', 'Uzivatel', array($pobocka));
+    }
+
+    public function zmenAdmin($id, $admin){
+        return $this->db->dotaz('update uzivatele set admin = ? where id = ?', array($admin, $id));
+    }
+
+    public function vratAdmin($id){
+        return $this->db->dotazJeden('select admin from uzivatele where id = ?', array($id));
     }
 
 }

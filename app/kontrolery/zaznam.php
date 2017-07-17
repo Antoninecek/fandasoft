@@ -146,6 +146,7 @@ class zaznam extends Kontroler {
      * kontrola zadani vstupu
      * kontrola neprazdnych vstupu
      * kontrola pridani zaznamu
+     * @param null $parametry
      * @throws \libs\Exception
      */
     public function pridej($parametry = null) {
@@ -223,7 +224,8 @@ class zaznam extends Kontroler {
                             $this->sablona->set('upozorneni', new Upozorneni('danger', "neco se podelalo u vydeje"));
                         }
 
-                    } elseif ($submit == "Prijem") {// prijem
+                    } elseif ($submit == "Prijem") {
+                        // prijem
 
                         if ($imei1) {
                             // neni tam uz pridanej vickrat, nez vydanej?
@@ -236,6 +238,20 @@ class zaznam extends Kontroler {
                             $result = $this->sz->pridejZaznam($ean, $imei1, $imei2, $kusy, $uzivatel->getId(), $text, $select, $faktura, $_SESSION[SESSION_POBOCKA]->getId());
 
                             if ($result['ovlivneno']) {
+
+                                // pridat do nevystaveno
+                                $nevystaveno = $this->sz->vratNevystaveno($ean, $_SESSION[SESSION_POBOCKA]->getId()); # TODO asi by melo vratit obj. Zaznam
+                                if ($nevystaveno) { # pokud to neco vratilo
+                                    $noveKusy = (int)$nevystaveno->getKusy() + (int)$kusy; # soucet kusu
+                                    $nevystavenoResult = $this->sz->updateNevystaveno($nevystaveno->getId(), $noveKusy); # TODO update nevystaveno podle id zaznamu a kusu
+                                } else {
+                                    $nevystavenoResult = $this->sz->pridejNevystaveno($ean, $kusy, $_SESSION[SESSION_POBOCKA]->getId()); # TODO pridani nevystaveno podle eanu, kusu a pobocky
+                                }
+
+                                if(!$nevystavenoResult){
+                                    # TODO loguj chybu // TODO log chyb u prijmu
+                                }
+
                                 $textOpravy = "zaznam/oprav/?id=" . $result['lastid'];
                                 $this->sablona->set('upozorneni', new Upozorneni('success', "zbozi pridano <a href='$textOpravy'>OPRAV ZAZNAM</a>"));
                             } else {

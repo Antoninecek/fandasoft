@@ -123,7 +123,7 @@
 </div>
 <footer class="footer">
     <div class="container-fluid">
-        Autor == Frantisek Jukl
+        <a href="home" style="color: lightgrey;">#FANDASOFT verze 2.0</a>
     </div>
 </footer>
 <?php

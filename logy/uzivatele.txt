@@ -1,0 +1,4 @@
+17.07.2017 13:41:59 1111 vyresetoval heslo pro 1417
+17.07.2017 14:39:52 1111 vyresetoval heslo pro 1417
+17.07.2017 14:54:53 1111 zmenil stav admin pro 1417 na 1
+17.07.2017 14:59:07 1111 pridal uzivatele 789789
