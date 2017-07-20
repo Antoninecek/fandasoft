@@ -10,7 +10,35 @@ namespace app\modely;
 
 
 class Zaznam {
-    private $id, $zbozi, $ean, $imei1, $imei2, $kusy, $jmeno, $text, $typ, $faktura, $datum, $pobocka;
+    private $id, $zbozi, $model, $popis, $ean, $imei1, $imei2, $kusy, $jmeno, $text, $typ, $faktura, $datum, $pobocka;
+
+    /**
+     * @return mixed
+     */
+    public function getPopis() {
+        return $this->popis;
+    }
+
+    /**
+     * @param mixed $popis
+     */
+    public function setPopis($popis) {
+        $this->popis = $popis;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getModel() {
+        return $this->model;
+    }
+
+    /**
+     * @param mixed $model
+     */
+    public function setModel($model) {
+        $this->model = $model;
+    }
 
     /**
      * @return mixed

@@ -8,7 +8,6 @@
 
 namespace app\modely;
 
-use app\kontrolery\zaznam;
 use libs\Spravce;
 
 
@@ -48,5 +47,29 @@ as A left join sap as B on A.ean = B.ean left join uzivatele as C on A.jmeno = C
         return $this->db->dotazObjekt('select * from zarizeni where id = ?', 'Zaznam', array($id));
     }
 
+    /**
+     * @param $ean
+     * @param $pobocka
+     * @return \app\modely\Zaznam
+     */
+    public function vratNevystaveno($ean, $pobocka){
+        return $this->db->dotazObjekt('select * from nevystavene where ean = ? and pobocka = ?', 'Zaznam', array($ean, $pobocka));
+    }
+
+    public function updateKusyNevystaveno($id, $kusy){
+        return $this->db->dotaz('update nevystavene set kusy = ? where id = ?', array($kusy, $id));
+    }
+
+    public function pridejNevystaveno($ean, $kusy, $pobocka){
+        return $this->db->dotaz('insert into nevystavene (ean, kusy, pobocka) values(?, ?, ?)', array($ean, $kusy, $pobocka));
+    }
+
+    public function vratVsehnyNevystaveno($pobocka){
+        return $this->db->dotazVsechnyObjekty('select A.id, A.ean, A.kusy, A.pobocka, A.datum, B.zbozi, B.model, B.popis from (select * from nevystavene where pobocka = ?) as A left join sap as B on A.ean = B.ean ', 'Zaznam', array($pobocka));
+    }
+
+    public function smazNevystaveno($id){
+        return $this->db->dotaz('delete from nevystavene where id = ?', array($id));
+    }
     //array($pobocka->getId(), $pocet)
 }

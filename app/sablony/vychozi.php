@@ -51,7 +51,7 @@
                             <a href="zaznam/prehled">PREHLED</a>
                         </li>
                         <li>
-                            <a href="vystav">VYSTAV</a>
+                            <a href="zaznam/vystav">VYSTAV</a>
                         </li>
                         <li>
                             <a href="inventura">INVENTURA</a>

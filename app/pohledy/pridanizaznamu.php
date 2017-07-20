@@ -63,7 +63,7 @@
         if ($('#formular-selectbox').find(':selected').data("select") == "Vydej" && $('#informace-dualsim').data("dual") == "true") {
             $('#formular-imei2').val('').prop('readonly', true);
         } else {
-            $('#formular-imei2').val('').prop('readonly', false);
+            $('#formular-imei2').prop('readonly', false);
         }
     }
 
@@ -71,13 +71,15 @@
     function cetnosti() {
         if ($('#formular-heslo').val() != "" && $('#formular-selectbox').val() != null) {
 
+            var button = $('#prepinac-vydavani');
+
             // zmena textu tlacitka
-            $(this).val(function () {
-                return this.value === "JEDNORAZOVY" ? "VICENASOBNY" : "JEDNORAZOVY";
+            button.val(function () {
+                return button.val() === "JEDNORAZOVY" ? "VICENASOBNY" : "JEDNORAZOVY";
             });
 
             // vymazani inputu
-            if ($(this).val() === "JEDNORAZOVY") {
+            if (button.val() === "JEDNORAZOVY") {
                 $('#formular-heslo, #formular-text').val(function () {
                     return ""
                 });
@@ -163,6 +165,7 @@
         cetnosti();
         disableKusy();
         zobrazInfo($('#formular-ean'));
+        $('#formular-heslo').focus();
     }
     <?php
     }
@@ -222,7 +225,7 @@
         }).on('click', function (e) {
             if ($('#formular-selectbox').find(':selected').data("select") != $(this).val()) {
                 e.preventDefault();
-            } else if (!validateIMEI($('#formular-imei1').val()) || !validateIMEI($('#formular-imei2').val()) || $('#formular-imei1').val() === $('#formular-imei2').val()) {
+            } else if (!validateIMEI($('#formular-imei1').val()) || !validateIMEI($('#formular-imei2').val()) || ($('#formular-imei1').val() === $('#formular-imei2').val() && $('#formular-imei1').val() != '')) {
                 $('#formular-imei1, #formular-imei2').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
                 e.preventDefault();
             } else if ($('#informace-dualsim').data("dual") == "true" && $('#formular-selectbox').find(':selected').data("select") == "Prijem" && ($('#formular-imei1').val() == "" || $('#formular-imei2').val() == "")) {

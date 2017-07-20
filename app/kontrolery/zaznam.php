@@ -238,18 +238,19 @@ class zaznam extends Kontroler {
                             $result = $this->sz->pridejZaznam($ean, $imei1, $imei2, $kusy, $uzivatel->getId(), $text, $select, $faktura, $_SESSION[SESSION_POBOCKA]->getId());
 
                             if ($result['ovlivneno']) {
+                                if ($select == "KAMION" || $select == "REFAKT") {
+                                    // pridat do nevystaveno
+                                    $nevystaveno = $this->sz->vratNevystaveno($ean, $_SESSION[SESSION_POBOCKA]->getId()); # TODO asi by melo vratit obj. Zaznam
+                                    if ($nevystaveno) { # pokud to neco vratilo
+                                        $noveKusy = (int)$nevystaveno->getKusy() + (int)$kusy; # soucet kusu
+                                        $nevystavenoResult = $this->sz->updateKusyNevystaveno($nevystaveno->getId(), $noveKusy); # TODO update nevystaveno podle id zaznamu a kusu
+                                    } else {
+                                        $nevystavenoResult = $this->sz->pridejNevystaveno($ean, $kusy, $_SESSION[SESSION_POBOCKA]->getId()); # TODO pridani nevystaveno podle eanu, kusu a pobocky
+                                    }
 
-                                // pridat do nevystaveno
-                                $nevystaveno = $this->sz->vratNevystaveno($ean, $_SESSION[SESSION_POBOCKA]->getId()); # TODO asi by melo vratit obj. Zaznam
-                                if ($nevystaveno) { # pokud to neco vratilo
-                                    $noveKusy = (int)$nevystaveno->getKusy() + (int)$kusy; # soucet kusu
-                                    $nevystavenoResult = $this->sz->updateNevystaveno($nevystaveno->getId(), $noveKusy); # TODO update nevystaveno podle id zaznamu a kusu
-                                } else {
-                                    $nevystavenoResult = $this->sz->pridejNevystaveno($ean, $kusy, $_SESSION[SESSION_POBOCKA]->getId()); # TODO pridani nevystaveno podle eanu, kusu a pobocky
-                                }
-
-                                if(!$nevystavenoResult){
-                                    # TODO loguj chybu // TODO log chyb u prijmu
+                                    if (!$nevystavenoResult) {
+                                        # TODO loguj chybu // TODO log chyb u prijmu
+                                    }
                                 }
 
                                 $textOpravy = "zaznam/oprav/?id=" . $result['lastid'];
@@ -314,6 +315,25 @@ class zaznam extends Kontroler {
                 $this->pridej(array('upozorneni' => new Upozorneni('warning', "zaznam neni, nebo uz je nejaka faktura prirazena")));
             }
         }
+    }
+
+    public function vystav($parametry = null){
+        if(!empty($parametry['heslo']) && !empty($parametry['id'])){
+            $uzivatel = $this->su->overHeslo(hash('sha256', $parametry['heslo']), $_SESSION[SESSION_POBOCKA]);
+            if(is_object($uzivatel)){
+                $res = $this->sz->smazNevystaveno($parametry['id']);
+                $upozorneni = $res ? new Upozorneni('success', 'Vystaveno.') : new Upozorneni('danger', 'Nevystaveno.');
+            } else {
+                $upozorneni = new Upozorneni('danger', 'Spatne heslo');
+            }
+            $this->sablona->set('upozorneni', $upozorneni);
+        }
+        $seznam = $this->sz->vratVsehnyNevystaveno($_SESSION[SESSION_POBOCKA]->getId());
+        $content = new Pohled('app/pohledy/vystav');
+        $content->set('seznam', $seznam);
+        $this->sablona->set('titulek', 'Vystav');
+        $this->sablona->set('content', $content->rendruj());
+        echo $this->sablona->rendruj();
     }
 
     public function vratInfoZbozi() {
