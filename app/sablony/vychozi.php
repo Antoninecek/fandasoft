@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <base href="<?= ROOT_DIR ?>">
+    <base href="<?= BASE_HREF ?>">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" type="image/png" sizes="32x32" href="<?= ROOT_DIR ?>favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= ROOT_DIR_FILES ?>favicon-32x32.png">
 
     <title>#FANDASOFT - <?= $titulek ?></title>
 
@@ -15,7 +15,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- Custom styles for this template -->
-    <link href="<?= ROOT_DIR ?>mycss.css" rel="stylesheet" type="text/css">
+    <link href="<?= ROOT_DIR_FILES ?>mycss.css" rel="stylesheet" type="text/css">
 
 </head>
 

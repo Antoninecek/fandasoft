@@ -19,8 +19,9 @@ class Bootstrap {
     }
 
     private function routuj() {
+
         if ($this->kontroler) {
-            $trida = "\\app\\kontrolery\\" . $this->kontroler;
+            $trida = "app\\kontrolery\\" . $this->kontroler;
             $soubor = "app/kontrolery/" . $this->kontroler . ".php";
 
             if (is_readable($soubor)) {
@@ -51,14 +52,20 @@ class Bootstrap {
     private function parsujUrl() {
         $url = $_SERVER['REQUEST_URI'];
         $url = filter_var($url, FILTER_SANITIZE_URL);
-        $pos = strpos($url, ROOT_DIR);
-        if ($pos !== false) {
+        if (ENVIRONMENT === 'DEV') {
+            $pos = strpos($url, ROOT_DIR);
+        } else {
+            $pos = true;
+            $url = ltrim($url,"/");
+        }
+        if ($pos == false) {
             $url = substr_replace($url, '', $pos, strlen(ROOT_DIR));
         }
+
+
         $parsovanaUrl = parse_url($url);
 
         $path = array_filter(explode('/', !empty($parsovanaUrl['path']) ? $parsovanaUrl['path'] : null));
-
         if (empty($path[0])) {
             $this->kontroler = null;
         } else if (count($path) > 2) {
@@ -66,7 +73,6 @@ class Bootstrap {
         } else {
             $this->kontroler = $path[0];
         }
-
         $this->akce = !empty($path[1]) ? $path[1] : null;
 
         if (!empty($parsovanaUrl['query'])) {
@@ -76,7 +82,6 @@ class Bootstrap {
             }
 
         }
-
         // POST jako parametry pro jednoduchou praci s formulari
         foreach ($_POST as $k => $v) {
             $this->parametry[$k] = $v;
@@ -101,16 +106,14 @@ class Bootstrap {
         } catch (\Exception $exception) {
             $this->presmeruj();
         }
-
     }
 
 
     private function presmeruj() {
-        if($this->kontroler == "zaznam" && $this->akce == "vratInfoZbozi"){
+        if ($this->kontroler == "zaznam" && $this->akce == "vratInfoZbozi") {
 
-        }
-        elseif ($this->kontroler != "pobocka" && $this->kontroler != "home") {
-            $this->kontroler = 'pobocka';
+        } elseif ($this->kontroler != "pobocka" && $this->kontroler != "home") {
+            $this->kontroler = 'home';
             $this->akce = '';
             $this->parametry = '';
             unset($_SESSION['uzivatel']);

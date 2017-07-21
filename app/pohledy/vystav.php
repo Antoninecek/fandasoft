@@ -34,7 +34,7 @@
                     <td><?= $s->getKusy() ?></td>
                     <td><?= $s->getDatum() ?></td>
                     <td>
-                        <button class="btn btn-info">VYSTAV</button>
+                        <button class="btn btn-info">zmiz</button>
                         <form class="form-inline" method="post" action="zaznam/vystav" style="display: none;" autocomplete="off">
                             <input class="formular-heslo form-control" type="text" name="heslo"
                                    placeholder="HESLO" required>
