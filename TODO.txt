@@ -23,3 +23,7 @@ nevystavene zbozi
 UPRAVY DB
 zarizeni + faktura + typ ** uprava ID -> id ** uprava imei -> imei1 a imei1 -> imei2
 pridani nevystaveno
+
+TODO !important
+prehled zvyraznovani imei
+spatne heslo zrusit disabled pri vycenasobnym vyberu

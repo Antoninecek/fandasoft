@@ -80,7 +80,7 @@ class pobocka extends Kontroler {
 //        ->setId('4f1g23a12aa', true)// Configures the id (jti claim), replicating as a header item
         ->setIssuedAt(time())// Configures the time that the token was issue (iat claim)
         ->setNotBefore(time())// Configures the time that the token can be used (nbf claim)
-        ->setExpiration(time() + 60 * 60 * 24)// Configures the expiration time of the token (nbf claim)
+        ->setExpiration(time() + 60 * 60 * 24 * 182)// Configures the expiration time of the token (nbf claim)
         ->set('pobocka', json_encode($pobocka))// Configures a new claim, called "uid"
         ->sign($signer, SIGN_JWT)
             ->getToken(); // Retrieves the generated token

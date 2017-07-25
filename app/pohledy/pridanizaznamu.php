@@ -1,10 +1,11 @@
-<form action="#" method="post" style="display: none;">
-    ean <input type="number" name="ean" min="1" required><br>
-    imei <input type="number" name="imei" min="1"><br>
-    kusy <input type="number" name="kusy" value="1" min="1" required><br>
-    vydej <input type="checkbox" name='vydej'><br>
-    <input type="submit" value="Submit">
-</form>
+<!--<form action="#" method="post" style="display: none;">-->
+<!--    ean <input type="number" name="ean" min="1" required><br>-->
+<!--    imei <input type="number" name="imei" min="1"><br>-->
+<!--    kusy <input type="number" name="kusy" value="1" min="1" required><br>-->
+<!--    vydej <input type="checkbox" name='vydej'><br>-->
+<!--    <input type="submit" value="Submit">-->
+<!--</form>-->
+
 
 <script type="text/javascript">
     function validateIMEI(value) {
@@ -52,6 +53,7 @@
         <?php if(isset($cetnost) && $cetnost === "VICENASOBNY"){
         ?>
         $('#prepinac-vydavani').val("<?= $cetnost ?>");
+        $('#formular-heslo').prop('type', 'password');
         $('#formular-heslo').val("<?= $heslo ?>");
         $('#formular-selectbox').val("<?= $select ?>");
         $('#formular-text').val("<?= $text ?>");
@@ -115,7 +117,7 @@
         }
     }
 
-    function zobrazInfo(ean){
+    function zobrazInfo(ean) {
         if (ean.val() != "") {
             // ajax vrat json objekt zbozi
             $.post("zaznam/vratInfoZbozi", {ean: ean.val()}, function (data, status) {
@@ -191,10 +193,19 @@
         informaceCetnost("pro zapamatovani typu, hesla a textu slouzi tlacitko CETNOST");
 
         // odmitnuti enteru
-        $('#formular').on('keyup keypress', function (e) {
+        var inputs = $(':input.js-auto').on('keypress', function (e) {
             var keyCode = e.keyCode || e.which;
             if (keyCode === 13) {
                 e.preventDefault();
+                var nextInput = inputs.get(inputs.index(this) + 1);
+
+                if (nextInput) {
+                    if(nextInput.getAttribute('name') == "submit" && $('#formular-selectbox').find(':selected').data("select") == "Vydej"){
+                        nextInput = inputs.get(inputs.index(this) + 2);
+                    }
+                    console.log();
+                    nextInput.focus();
+                }
                 return false;
             }
         });
@@ -223,9 +234,12 @@
                 $('#formular-selectbox').toggleClass('cerveny-stin');
             }
         }).on('click', function (e) {
+
+
+
             if ($('#formular-selectbox').find(':selected').data("select") != $(this).val()) {
                 e.preventDefault();
-            } else if (!validateIMEI($('#formular-imei1').val()) || !validateIMEI($('#formular-imei2').val()) || ($('#formular-imei1').val() === $('#formular-imei2').val() && $('#formular-imei1').val() != '')) {
+            } else if (!validateIMEI($('#formular-imei1').val()) || !validateIMEI($('#formular-imei2').val()) ) {
                 $('#formular-imei1, #formular-imei2').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
                 e.preventDefault();
             } else if ($('#informace-dualsim').data("dual") == "true" && $('#formular-selectbox').find(':selected').data("select") == "Prijem" && ($('#formular-imei1').val() == "" || $('#formular-imei2').val() == "")) {
@@ -237,6 +251,15 @@
             } else if ($('#ukaz-ora').val() == "") {
                 $('#ukaz-ora').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
                 e.preventDefault();
+            } else {
+//                var shaObj = new jsSHA("SHA-256", "TEXT");
+//                var token = "<?//= $formToken ?>//";
+//                console.log(token);
+//                var pass = $('#formular-heslo').val() + token;
+//                console.log(pass);
+//                shaObj.update(pass);
+//                var hash = shaObj.getHash("HEX");
+//                console.log(hash);
             }
         });
 
@@ -252,10 +275,10 @@
         // automaticky skok
         $('#formular-ean, #formular-imei1, #formular-imei2, #formular-faktura').on('input', function () {
             if ($('#prepinac-skakani').val() === "AUTOMATICKY") {
-                var tohle = $(this);
-                setTimeout(function () {
-                    tohle.closest('.has-feedback').nextAll('.has-feedback').eq(0).find('input').focus();
-                }, 1500);
+//                var tohle = $(this);
+//                setTimeout(function () {
+//                    tohle.closest('.has-feedback').nextAll('.has-feedback').eq(0).find('input').focus();
+//                }, 1500);
             }
         }).on('focusout', function () {
             var $hodnota = $(this).val();
@@ -354,12 +377,12 @@
                     </div>
                     <!--TEXT-->
                     <div class="col-sm-6">
-                        <input id="formular-text" name="text" type="text" class="form-control" placeholder="TEXT">
+                        <input id="formular-text" name="text" type="text" class="form-control js-auto" placeholder="TEXT">
                     </div>
 
                     <!-- HESLO -->
                     <div class="col-sm-5">
-                        <input id="formular-heslo" name="heslo" type="text" class="form-control" placeholder="HESLO"
+                        <input id="formular-heslo" name="heslo" type="text" class="form-control js-auto" placeholder="HESLO"
                                required="true"
                                autocomplete="new-password">
                     </div>
@@ -393,7 +416,7 @@
                     <!--EAN-->
                     <div class="col-sm-6  has-feedback">
                         <div class="input-group">
-                            <input id="formular-ean" name="ean" type="text" class="form-control" placeholder="EAN"
+                            <input id="formular-ean" name="ean" type="text" class="form-control js-auto" placeholder="EAN"
                                    required="true">
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-remove-sign"></i>
@@ -403,7 +426,7 @@
                     <!--IMEI 1-->
                     <div class="col-sm-6  has-feedback">
                         <div class="input-group">
-                            <input id="formular-imei1" name="imei1" type="text" class="form-control"
+                            <input id="formular-imei1" name="imei1" type="text" class="form-control js-auto"
                                    pattern="[0-9]{14,15}"
                                    placeholder="IMEI 1">
                             <span class="input-group-addon">
@@ -413,14 +436,14 @@
                     </div>
                     <!--KUSY-->
                     <div class="col-sm-6">
-                        <input id="formular-kusy" name="kusy" type="number" class="form-control" min="1" value="1"
+                        <input id="formular-kusy" class="form-control" name="kusy" type="number"  min="1" value="1"
                                placeholder="KUSY" required="true"
                                tabindex="-1">
                     </div>
                     <!--IMEI 2-->
                     <div class="col-sm-6  has-feedback">
                         <div class="input-group">
-                            <input id="formular-imei2" name="imei2" type="text" class="form-control"
+                            <input id="formular-imei2" name="imei2" type="text" class="form-control js-auto"
                                    pattern="[0-9]{14,15}"
                                    placeholder="IMEI 2">
                             <span class="input-group-addon">
@@ -431,13 +454,13 @@
                     <!--TLACITKA-->
                     <div class="col-sm-6">
                         <input id="formular-submit-prijem" name="submit" type="submit"
-                               class="form-control btn btn-default"
-                               value="Prijem">
+                               class="form-control btn btn-default js-auto"
+                               value="Prijem" style="height: 100px;">
                     </div>
                     <div class="col-sm-6">
                         <input id="formular-submit-vydej" name="submit" type="submit"
-                               class="form-control btn btn-default"
-                               value="Vydej">
+                               class="form-control btn btn-default js-auto"
+                               value="Vydej" style="height: 100px;">
                     </div>
                     <!--CETNOST-->
                     <input id="formular-cetnost" name="cetnost" type="hidden" value="">

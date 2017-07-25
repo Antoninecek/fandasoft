@@ -265,7 +265,7 @@ class Uzivatel extends Kontroler {
 
             if (is_numeric($oscislo) && $jmeno && $this->su->jeValidniHeslo($oscislo, $heslo) && $email && $this->su->zjistiUnikatnostOscisla($oscislo) == false) {
                 // kontrola po ocisteni vstupu pro spravny format
-                $result = $this->su->pridejUzivatele($oscislo, $jmeno, hash('sha256', $heslo), $email);
+                $result = $this->su->pridejUzivatele($oscislo, $jmeno, hash('sha256', $heslo), $email, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
                 if ($result) {
                     $this->sablona->set('upozorneni', new Upozorneni('success', 'Uzivatel byl pridan.'));
                     $log = new Log($_SESSION['uzivatel']->getOscislo() . ' pridal uzivatele ' . $oscislo, 1);

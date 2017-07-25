@@ -191,6 +191,7 @@ class zaznam extends Kontroler {
             // nesmi byt nullovy
             if ($select && $heslo && $ean && $submit && $cetnost && $kusy) {
                 $uzivatel = $this->su->overHeslo(hash('sha256', $heslo), $_SESSION[SESSION_POBOCKA]);
+
                 // uzivatel existuje
                 if (is_object($uzivatel) && $uzivatel->getAktivni() != 0) {
 
@@ -233,8 +234,9 @@ class zaznam extends Kontroler {
                         } else {
                             $suma = 0;
                         }
+
                         // pokud rovno 0 nebo null, muzem pridat
-                        if ($suma == 0) {
+                        if ($suma->kusy == 0) {
                             $result = $this->sz->pridejZaznam($ean, $imei1, $imei2, $kusy, $uzivatel->getId(), $text, $select, $faktura, $_SESSION[SESSION_POBOCKA]->getId());
 
                             if ($result['ovlivneno']) {

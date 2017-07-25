@@ -53,7 +53,8 @@ class SpravceUzivatelu extends Spravce{
      * @return Uzivatel
      */
     public function overHeslo($heslo, $pobocka){
-        return $this->db->dotazObjekt('SELECT * FROM uzivatele WHERE BINARY heslo = BINARY ? AND pobocka = ?', 'Uzivatel', array($heslo, $pobocka->getIdPobocka()));
+        return $this->db->dotazObjekt('SELECT * FROM uzivatele WHERE BINARY heslo = ? AND pobocka = ?', 'Uzivatel', array($heslo, $pobocka->getIdPobocka()));
+
     }
 
     public function zmenHeslo($id, $heslo){
@@ -84,10 +85,11 @@ class SpravceUzivatelu extends Spravce{
      * @param $jmeno
      * @param $heslo
      * @param $email
-     * @return Uzivatel
+     * @param $pobocka
+     * @return \libs\default
      */
-    public function pridejUzivatele($oscislo, $jmeno, $heslo, $email){
-        return $this->db->dotaz('insert into uzivatele (oscislo, jmeno, heslo, email) values (?, ?, ?, ?)', array($oscislo, $jmeno, $heslo, $email));
+    public function pridejUzivatele($oscislo, $jmeno, $heslo, $email, $pobocka){
+        return $this->db->dotaz('insert into uzivatele (oscislo, jmeno, heslo, email, pobocka) values (?, ?, ?, ?, ?)', array($oscislo, $jmeno, $heslo, $email, $pobocka));
     }
 
     public function zjistiUnikatnostOscisla($oscislo){

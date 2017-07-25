@@ -70,7 +70,7 @@ class db {
 
     public function dotazObjekt($dotaz, $typ, $parametry = array()) {
         $stmt = $this->spojeni->prepare($dotaz);
-        $a = $stmt->execute($parametry);
+        $stmt->execute($parametry);
         $stmt->setFetchMode(PDO::FETCH_CLASS, 'app\\modely\\' . $typ);
         return $stmt->fetch();
     }

@@ -11,6 +11,10 @@ Options -Indexes
 
 DirectoryIndex index.php
 
+RewriteCond %{HTTPS} off
+RewriteCond %{SERVER_PORT} !8080
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [L,R=301]
+
 #ErrorDocument 404 app/
 # Prepisovaci podminky
 # viz: http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html#rewritecond

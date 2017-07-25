@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--  jsSHA256  -->
+    <script type="text/javascript" src="<?= ROOT_DIR_FILES ?>jssha/src/sha256.js"></script>
+    <script type="text/javascript" src="<?= ROOT_DIR_FILES ?>jssha/src/sha.js"></script>
     <!-- Custom styles for this template -->
     <link href="<?= ROOT_DIR_FILES ?>mycss.css" rel="stylesheet" type="text/css">
 
@@ -84,12 +87,15 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <span style="color: lightgrey; font-weight: bold;"><?= $_SESSION['uzivatel']->getJmeno() ?></span>
+                            <span
+                                style="color: lightgrey; font-weight: bold;"><?= $_SESSION['uzivatel']->getJmeno() ?></span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
-                            <span style="color: gray;"><a href="uzivatel/odhlaseni" style="color: lightgrey; text-decoration: underline;">odhlas me</a></span>
+                            <span style="color: gray;"><a href="uzivatel/odhlaseni"
+                                                          style="color: lightgrey; text-decoration: underline;">odhlas
+                                    me</a></span>
                         </div>
                     </div>
                     <?php

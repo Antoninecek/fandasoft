@@ -22,7 +22,7 @@ class Spravcezaznamu extends Spravce {
     }
 
     public function vratSumuImei($ean, $imei, $pobocka) {
-        return $this->db->dotazJeden('SELECT SUM(kusy) FROM zarizeni WHERE ean = ? AND pobocka = ? AND (imei1 = ? OR imei2 = ?)', array($ean, $pobocka->getId(), $imei, $imei));
+        return $this->db->dotazJeden('SELECT SUM(kusy) as kusy FROM zarizeni WHERE ean = ? AND pobocka = ? AND (imei1 = ? OR imei2 = ?)', array($ean, $pobocka->getId(), $imei, $imei));
     }
 
     public function vratVsechnyZaznamyEan($ean, $pobocka) {
