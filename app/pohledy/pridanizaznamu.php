@@ -93,6 +93,25 @@
             } else {
                 informaceCetnost("pro odhlaseni zmackni znovu tlacitko CETNOST");
             }
+        } else if ($('#formular-heslo').val() == "" && $('#prepinac-vydavani').val() == "VICENASOBNY") {
+
+            var button = $('#prepinac-vydavani');
+
+            // zmena textu tlacitka
+            button.val(function () {
+                return button.val() === "JEDNORAZOVY" ? "VICENASOBNY" : "JEDNORAZOVY";
+            });
+
+            // vymazani inputu
+            if (button.val() === "JEDNORAZOVY") {
+                // firenuti on change kvuli ochcavce
+                $('#formular-heslo').trigger("change");
+
+                informaceCetnost("pro zapamatovani typu, hesla a textu slouzi tlacitko CETNOST");
+            } else {
+                informaceCetnost("pro odhlaseni zmackni znovu tlacitko CETNOST");
+            }
+
         } else {
             $('#formular-heslo, #formular-selectbox').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
             informaceCetnost("<br>je potreba zadat typ a heslo");
@@ -200,7 +219,7 @@
                 var nextInput = inputs.get(inputs.index(this) + 1);
 
                 if (nextInput) {
-                    if(nextInput.getAttribute('name') == "submit" && $('#formular-selectbox').find(':selected').data("select") == "Vydej"){
+                    if (nextInput.getAttribute('name') == "submit" && $('#formular-selectbox').find(':selected').data("select") == "Vydej") {
                         nextInput = inputs.get(inputs.index(this) + 2);
                     }
                     console.log();
@@ -236,10 +255,9 @@
         }).on('click', function (e) {
 
 
-
             if ($('#formular-selectbox').find(':selected').data("select") != $(this).val()) {
                 e.preventDefault();
-            } else if (!validateIMEI($('#formular-imei1').val()) || !validateIMEI($('#formular-imei2').val()) ) {
+            } else if (!validateIMEI($('#formular-imei1').val()) || !validateIMEI($('#formular-imei2').val())) {
                 $('#formular-imei1, #formular-imei2').fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
                 e.preventDefault();
             } else if ($('#informace-dualsim').data("dual") == "true" && $('#formular-selectbox').find(':selected').data("select") == "Prijem" && ($('#formular-imei1').val() == "" || $('#formular-imei2').val() == "")) {
@@ -377,12 +395,14 @@
                     </div>
                     <!--TEXT-->
                     <div class="col-sm-6">
-                        <input id="formular-text" name="text" type="text" class="form-control js-auto" placeholder="TEXT">
+                        <input id="formular-text" name="text" type="text" class="form-control js-auto"
+                               placeholder="TEXT">
                     </div>
 
                     <!-- HESLO -->
                     <div class="col-sm-5">
-                        <input id="formular-heslo" name="heslo" type="text" class="form-control js-auto" placeholder="HESLO"
+                        <input id="formular-heslo" name="heslo" type="text" class="form-control js-auto"
+                               placeholder="HESLO"
                                required="true"
                                autocomplete="new-password">
                     </div>
@@ -416,7 +436,8 @@
                     <!--EAN-->
                     <div class="col-sm-6  has-feedback">
                         <div class="input-group">
-                            <input id="formular-ean" name="ean" type="text" class="form-control js-auto" placeholder="EAN"
+                            <input id="formular-ean" name="ean" type="text" class="form-control js-auto"
+                                   placeholder="EAN"
                                    required="true">
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-remove-sign"></i>
@@ -436,7 +457,7 @@
                     </div>
                     <!--KUSY-->
                     <div class="col-sm-6">
-                        <input id="formular-kusy" class="form-control" name="kusy" type="number"  min="1" value="1"
+                        <input id="formular-kusy" class="form-control" name="kusy" type="number" min="1" value="1"
                                placeholder="KUSY" required="true"
                                tabindex="-1">
                     </div>

@@ -9,7 +9,7 @@
 namespace app\modely;
 
 
-class Zaznam {
+class Zaznam implements \JsonSerializable{
     private $id, $zbozi, $model, $popis, $ean, $imei1, $imei2, $kusy, $jmeno, $text, $typ, $faktura, $datum, $pobocka;
 
     /**
@@ -239,7 +239,7 @@ class Zaznam {
     }
 
 
-
-
-
+    function jsonSerialize() {
+        return get_object_vars($this);
+    }
 }

@@ -1,18 +1,18 @@
 POHLED PRIDEJ
 
-rozlozeni formu
-js - skok, enter prevent, synchro selectboxu se submit, clear input
-vochcani ignorace autocomplete
-ajax -  vyhledani ory v db
-dodelat druhej sloupec formu 
-vicenasobny rezim rezignuje po submitu formu
+#rozlozeni formu
+#js - skok, enter prevent, synchro selectboxu se submit, clear input
+#vochcani ignorace autocomplete
+#ajax -  vyhledani ory v db
+#dodelat druhej sloupec formu
+#vicenasobny rezim rezignuje po submitu formu
 js kontrola souctova imei
 
 TODO
 vyhledat zbozi ve sklade - neni ve druhym?
 logovani zbozi do minusu - soubor, db => jednoduche statistiky pro pobocku
 ajax - vyhledani imei v db ???
-dualsim - vynutit u prijmu dva imei
+#dualsim - vynutit u prijmu dva imei - nemuzu samsung telefony
 
 rozmyslet si, co chci vyznacovat - kravina davat vedet, ze to zbozi pujde do minusu
 
@@ -26,4 +26,5 @@ pridani nevystaveno
 
 TODO !important
 prehled zvyraznovani imei
-spatne heslo zrusit disabled pri vycenasobnym vyberu
+#spatne heslo zrusit disabled pri vycenasobnym vyberu
+logovani vydani do minusu

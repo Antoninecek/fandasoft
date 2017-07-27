@@ -52,24 +52,40 @@ as A left join sap as B on A.ean = B.ean left join uzivatele as C on A.jmeno = C
      * @param $pobocka
      * @return \app\modely\Zaznam
      */
-    public function vratNevystaveno($ean, $pobocka){
+    public function vratNevystavenoEan($ean, $pobocka){
         return $this->db->dotazObjekt('select * from nevystavene where ean = ? and pobocka = ?', 'Zaznam', array($ean, $pobocka));
     }
 
-    public function updateKusyNevystaveno($id, $kusy){
-        return $this->db->dotaz('update nevystavene set kusy = ? where id = ?', array($kusy, $id));
+    /**
+     * @param $ora
+     * @param $pobocka
+     * @return \app\modely\Zaznam
+     */
+    public function vratNevystavenoOra($ora, $pobocka){
+        return $this->db->dotazObjekt('select * from nevystavene where ora = ? and pobocka = ?', 'Zaznam', array($ora, $pobocka));
     }
 
-    public function pridejNevystaveno($ean, $kusy, $pobocka){
-        return $this->db->dotaz('insert into nevystavene (ean, kusy, pobocka) values(?, ?, ?)', array($ean, $kusy, $pobocka));
+    public function updateKusyNevystaveno($id, $kusy, $sap = 0){
+        return $this->db->dotaz('update nevystavene set kusy = ?, sap = ? where id = ?', array($kusy, $sap, $id));
+    }
+
+    public function pridejNevystaveno($ean, $ora, $kusy, $pobocka){
+        return $this->db->dotaz('insert into nevystavene (ora, ean, kusy, pobocka) values(?, ?, ?, ?)', array($ora, $ean, $kusy, $pobocka));
     }
 
     public function vratVsehnyNevystaveno($pobocka){
-        return $this->db->dotazVsechnyObjekty('select A.id, A.ean, A.kusy, A.pobocka, A.datum, B.zbozi, B.model, B.popis from (select * from nevystavene where pobocka = ?) as A left join sap as B on A.ean = B.ean ', 'Zaznam', array($pobocka));
+        return $this->db->dotazVsechnyObjekty('select A.id, A.ean, A.kusy, A.pobocka, A.datum, B.zbozi, B.model, B.popis from (select * from nevystavene where pobocka = ? and sap = 0 and kusy > 0) as A left join sap as B on A.ean = B.ean ', 'Zaznam', array($pobocka));
+    }
+
+    public function zmenSapVystaveno($pobocka){
+        return $this->db->dotaz('update nevystavene set sap = 1 where pobocka = ? and kusy > 0 and sap = 0', array($pobocka));
     }
 
     public function smazNevystaveno($id){
         return $this->db->dotaz('delete from nevystavene where id = ?', array($id));
     }
-    //array($pobocka->getId(), $pocet)
+
+    public function vratCerstveVystaveno($pobocka){
+        return $this->db->dotazVsechnyObjekty('select * from nevystavene where sap = 0 and pobocka = ?', 'Zaznam', array($pobocka));
+    }
 }

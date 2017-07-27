@@ -2,15 +2,29 @@
 /**
  * Created by PhpStorm.
  * User: František
- * Date: 20.07.2017
- * Time: 13:15
+ * Date: 26.07.2017
+ * Time: 19:40
  */
 ?>
 
-<h1>Vystaveni</h1>
+<h1>VYSTAV</h1>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
+            <form action="zaznam/vystav/" method="post">
+                <input type="number" name="vystavZaznam" class="form-control" placeholder="ORA / EAN">
+                <input type="submit" class="btn btn-default">
+            </form>
+        </div>
+    </div>
+    <?php if (isset($texty)) {
+        echo $texty;
+    }
+    ?>
+    <div class="row">
+        <div class="col-sm-12">
+            <a id="zdar" class="btn btn-info col-sm-offset-9" href="zaznam/vystavSap/" tabindex="-1">PREVEST DO
+                ZDARU</a>
             <table class="table table-responsive">
                 <thead>
                 <th>ID</th>
@@ -25,24 +39,15 @@
                 <?php
                 foreach ($seznam as $s) {
                     ?>
-                <tr>
-                    <td><?= $s->getId() ?></td>
-                    <td><?= $s->getEan() ?></td>
-                    <td><?= $s->getZbozi() ?></td>
-                    <td><?= $s->getModel() ?></td>
-                    <td><?= $s->getPopis() ?></td>
-                    <td><?= $s->getKusy() ?></td>
-                    <td><?= $s->getDatum() ?></td>
-                    <td>
-                        <button class="btn btn-info">zmiz</button>
-                        <form class="form-inline" method="post" action="zaznam/vystav" style="display: none;" autocomplete="off">
-                            <input class="formular-heslo form-control" type="text" name="heslo"
-                                   placeholder="HESLO" required>
-                            <input type="number" name="id" value="<?= $s->getId() ?>" hidden>
-                            <input class="btn btn-info" type="submit" value="potvrd">
-                        </form>
-                    </td>
-                </tr>
+                    <tr>
+                        <td><?= $s->getId() ?></td>
+                        <td><?= $s->getEan() ?></td>
+                        <td><?= $s->getZbozi() ?></td>
+                        <td><?= $s->getModel() ?></td>
+                        <td><?= $s->getPopis() ?></td>
+                        <td><?= $s->getKusy() ?></td>
+                        <td><?= $s->getDatum() ?></td>
+                    </tr>
                     <?php
                 }
                 ?>
@@ -52,24 +57,3 @@
     </div>
 </div>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-
-        // fucking vochcavka ignorace autocomplete
-        $('.formular-heslo').on('input change', function () {
-            if ($(this).val() != "") {
-                $(this).prop('type', "password");
-            } else {
-                $(this).prop('type', "text");
-            }
-        });
-
-        $('button').on('click', function () {
-            $('form').hide();
-            $('button').show();
-            $(this).hide();
-            $(this).siblings('form').show();
-
-        });
-    })
-</script>

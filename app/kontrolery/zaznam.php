@@ -319,19 +319,67 @@ class zaznam extends Kontroler {
         }
     }
 
-    public function vystav($parametry = null){
-        if(!empty($parametry['heslo']) && !empty($parametry['id'])){
-            $uzivatel = $this->su->overHeslo(hash('sha256', $parametry['heslo']), $_SESSION[SESSION_POBOCKA]);
-            if(is_object($uzivatel)){
-                $res = $this->sz->smazNevystaveno($parametry['id']);
-                $upozorneni = $res ? new Upozorneni('success', 'Vystaveno.') : new Upozorneni('danger', 'Nevystaveno.');
-            } else {
-                $upozorneni = new Upozorneni('danger', 'Spatne heslo');
-            }
-            $this->sablona->set('upozorneni', $upozorneni);
-        }
-        $seznam = $this->sz->vratVsehnyNevystaveno($_SESSION[SESSION_POBOCKA]->getId());
+    public function vystav($parametry = null) {
+
+        $cislo = empty($parametry['vystavZaznam']) ? null : $parametry['vystavZaznam'];
+
         $content = new Pohled('app/pohledy/vystav');
+
+        if(!empty($cislo) && is_numeric($cislo)){
+            if(strlen((string)$cislo > 10)){
+                $zaznam = $this->sz->vratNevystavenoEan($cislo, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
+                $ora = null;
+                $ean = $cislo;
+            } else {
+                $zaznam = $this->sz->vratNevystavenoOra($cislo, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
+                $ora = $cislo;
+                $ean = null;
+            }
+            // zaznam existuje, staci update kusu
+            if(is_object($zaznam)){
+                $this->sz->updateKusyNevystaveno($zaznam->getId(), $zaznam->getKusy() + 1);
+            } else {
+                $this->sz->pridejNevystaveno($ean, $ora, 1, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
+            }
+        }
+
+        $seznam = $this->sz->vratVsehnyNevystaveno($_SESSION[SESSION_POBOCKA]->getIdPobocka());
+        $content->set('seznam', $seznam);
+        $this->sablona->set('titulek', 'Vystav');
+        $this->sablona->set('content', $content->rendruj());
+        echo $this->sablona->rendruj();
+    }
+
+    public function vystavSap(){
+        $seznam = $this->sz->vratVsehnyNevystaveno($_SESSION[SESSION_POBOCKA]->getIdPobocka());
+//        $ovlivneno = $this->sz->zmenSapVystaveno($_SESSION[SESSION_POBOCKA]->getIdPobocka());
+        $ovlivneno = true;
+
+        $content = new Pohled('app/pohledy/vystav');
+
+        if($ovlivneno){
+            $textZbozi = '';
+            $textEan = '';
+            foreach($seznam as $s){
+                if(!empty($s->getZbozi())){
+                    $textZbozi = $textZbozi . $s->getZbozi() . "\r\n";
+                } else {
+                    $textEan = $textEan . $s->getEan() . "\r\n";
+                }
+            }
+
+            $to = "frantisek.jukl@fandasoft.cz";
+            $subject = "#FANDASOFT - Vystaveno";
+            $txt = $textZbozi . "\r\n" . $textEan;
+            $headers = "From: vystaveno@fandasoft.cz" . "\r\n";
+
+            mail($to,$subject,$txt,$headers);
+
+            $txt = str_replace("\r\n", "<br>", $txt);
+            $content->set('texty', $txt);
+        }
+
+        $seznam = $this->sz->vratVsehnyNevystaveno($_SESSION[SESSION_POBOCKA]->getIdPobocka());
         $content->set('seznam', $seznam);
         $this->sablona->set('titulek', 'Vystav');
         $this->sablona->set('content', $content->rendruj());
