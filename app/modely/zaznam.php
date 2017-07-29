@@ -10,7 +10,63 @@ namespace app\modely;
 
 
 class Zaznam implements \JsonSerializable{
-    private $id, $zbozi, $model, $popis, $ean, $imei1, $imei2, $kusy, $jmeno, $text, $typ, $faktura, $datum, $pobocka;
+    private $id, $zbozi, $zarkusy, $priznak, $nevystavkusy, $ora, $model, $popis, $ean, $imei1, $imei2, $kusy, $jmeno, $text, $typ, $faktura, $datum, $pobocka;
+
+    /**
+     * @return mixed
+     */
+    public function getZarkusy() {
+        return $this->zarkusy;
+    }
+
+    /**
+     * @param mixed $zarkusy
+     */
+    public function setZarkusy($zarkusy) {
+        $this->zarkusy = $zarkusy;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPriznak() {
+        return $this->priznak;
+    }
+
+    /**
+     * @param mixed $priznak
+     */
+    public function setPriznak($priznak) {
+        $this->priznak = $priznak;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNevystavkusy() {
+        return $this->nevystavkusy;
+    }
+
+    /**
+     * @param mixed $nevystavkusy
+     */
+    public function setNevystavkusy($nevystavkusy) {
+        $this->nevystavkusy = $nevystavkusy;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOra() {
+        return $this->ora;
+    }
+
+    /**
+     * @param mixed $ora
+     */
+    public function setOra($ora) {
+        $this->ora = $ora;
+    }
 
     /**
      * @return mixed

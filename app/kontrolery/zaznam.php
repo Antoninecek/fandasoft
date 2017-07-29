@@ -325,8 +325,8 @@ class zaznam extends Kontroler {
 
         $content = new Pohled('app/pohledy/vystav');
 
-        if(!empty($cislo) && is_numeric($cislo)){
-            if(strlen((string)$cislo > 10)){
+        if (!empty($cislo) && is_numeric($cislo)) {
+            if (strlen((string)$cislo) > 10) {
                 $zaznam = $this->sz->vratNevystavenoEan($cislo, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
                 $ora = null;
                 $ean = $cislo;
@@ -336,52 +336,115 @@ class zaznam extends Kontroler {
                 $ean = null;
             }
             // zaznam existuje, staci update kusu
-            if(is_object($zaznam)){
+            if (is_object($zaznam)) {
                 $this->sz->updateKusyNevystaveno($zaznam->getId(), $zaznam->getKusy() + 1);
             } else {
                 $this->sz->pridejNevystaveno($ean, $ora, 1, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
             }
         }
 
-        $seznam = $this->sz->vratVsehnyNevystaveno($_SESSION[SESSION_POBOCKA]->getIdPobocka());
-        $content->set('seznam', $seznam);
         $this->sablona->set('titulek', 'Vystav');
         $this->sablona->set('content', $content->rendruj());
         echo $this->sablona->rendruj();
     }
 
-    public function vystavSap(){
+    public function vystavSap($parametry = null) {
         $seznam = $this->sz->vratVsehnyNevystaveno($_SESSION[SESSION_POBOCKA]->getIdPobocka());
-//        $ovlivneno = $this->sz->zmenSapVystaveno($_SESSION[SESSION_POBOCKA]->getIdPobocka());
-        $ovlivneno = true;
 
-        $content = new Pohled('app/pohledy/vystav');
+        if (!empty($parametry['vystavtoken']) && $parametry['vystavtoken'] == $_SESSION['vystavtoken']) {
+            $ovlivneno = $this->sz->zmenSapVystaveno($_SESSION[SESSION_POBOCKA]->getIdPobocka(), 1);
+        } else {
+            $ovlivneno = false;
+        }
 
-        if($ovlivneno){
-            $textZbozi = '';
-            $textEan = '';
-            foreach($seznam as $s){
-                if(!empty($s->getZbozi())){
-                    $textZbozi = $textZbozi . $s->getZbozi() . "\r\n";
+        $content = new Pohled('app/pohledy/vystavkontrola');
+
+        $vystavtoken = $this->getFormToken();
+        $_SESSION['vystavtoken'] = $vystavtoken;
+        $content->set('vystavtoken', $vystavtoken);
+
+        $zbozi = array();
+        $ean = array();
+
+        if ($ovlivneno) {
+            foreach ($seznam as $s) {
+                if ($s->getKusy() == 0) {
+                    $this->sz->smazNevystaveno($s->getId());
+                }
+
+                if (!empty($s->getZbozi()) || !empty($s->getOra())) {
+                    $zbozi[] = $s;
                 } else {
-                    $textEan = $textEan . $s->getEan() . "\r\n";
+                    $ean[] = $s;
                 }
             }
 
             $to = "frantisek.jukl@fandasoft.cz";
             $subject = "#FANDASOFT - Vystaveno";
-            $txt = $textZbozi . "\r\n" . $textEan;
             $headers = "From: vystaveno@fandasoft.cz" . "\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
-            mail($to,$subject,$txt,$headers);
+            $emailZbozi = '';
+            foreach ($zbozi as $z) {
+                $zboziid = empty($z->getZbozi()) ? $z->getOra() : $z->getZbozi();
+                $emailZbozi = $emailZbozi . $zboziid . " " . $z->getKusy() . "<br>";
+            }
+            $emailEan = '';
+            foreach ($ean as $z) {
+                $emailEan = $emailEan . $z->getEan() . " " . $z->getKusy() . "<br>";
+            }
 
-            $txt = str_replace("\r\n", "<br>", $txt);
-            $content->set('texty', $txt);
+            $emailText = "<html><head><title>vystaveno</title></head><body><h1>ORA</h1>" . $emailZbozi . "<br><h1>EAN</h1>" . $emailEan . "</body></html>";
+
+            mail($to, $subject, $emailText, $headers);
+
         }
+        $content->set('seznamZbozi', $zbozi);
+        $content->set('seznamEan', $ean);
 
         $seznam = $this->sz->vratVsehnyNevystaveno($_SESSION[SESSION_POBOCKA]->getIdPobocka());
         $content->set('seznam', $seznam);
+
         $this->sablona->set('titulek', 'Vystav');
+        $this->sablona->set('content', $content->rendruj());
+        echo $this->sablona->rendruj();
+    }
+
+    public function zabal($parametry = null) {
+        $cislo = empty($parametry['vystavZaznam']) ? null : $parametry['vystavZaznam'];
+
+        $content = new Pohled('app/pohledy/zabal');
+        if (!empty($cislo) && is_numeric($cislo)) {
+            if (strlen((string)$cislo) > 10) {
+                $zaznam = $this->sz->vratNevystavenoEan($cislo, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
+                $ora = null;
+                $ean = $cislo;
+            } else {
+                $zaznam = $this->sz->vratNevystavenoOra($cislo, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
+                $ora = $cislo;
+                $ean = null;
+            }
+            // zaznam existuje, staci update kusu
+            if (is_object($zaznam)) {
+                $kusy = ($zaznam->getKusy() - 1) < 0 ? 0 : ($zaznam->getKusy() - 1);
+                $this->sz->updateKusyNevystaveno($zaznam->getId(), $kusy);
+            } else {
+                $this->sz->pridejNevystaveno($ean, $ora, -1, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
+            }
+        }
+
+        $this->sablona->set('titulek', 'Zabal');
+        $this->sablona->set('content', $content->rendruj());
+        echo $this->sablona->rendruj();
+    }
+
+    public function prehledVystav() {
+
+        $seznam = $this->sz->vratVsechnyZaznamyNevystaveno($_SESSION[SESSION_POBOCKA]->getId());
+        $content = new Pohled('app/pohledy/prehledvystav');
+        $content->set('seznam', $seznam);
+        $this->sablona->set('titulek', 'prehled vystav');
         $this->sablona->set('content', $content->rendruj());
         echo $this->sablona->rendruj();
     }

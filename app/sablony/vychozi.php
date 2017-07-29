@@ -57,6 +57,15 @@
                             <a href="zaznam/vystav">VYSTAV</a>
                         </li>
                         <li>
+                            <a href="zaznam/zabal">ZABAL</a>
+                        </li>
+                        <li>
+                            <a href="zaznam/vystavsap">PREVEDENI</a>
+                        </li>
+                        <li>
+                            <a href="zaznam/prehledvystav">VYSTAVENI</a>
+                        </li>
+                        <li>
                             <a href="inventura">INVENTURA</a>
                         </li>
                     </ul>

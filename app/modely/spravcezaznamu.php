@@ -74,11 +74,11 @@ as A left join sap as B on A.ean = B.ean left join uzivatele as C on A.jmeno = C
     }
 
     public function vratVsehnyNevystaveno($pobocka){
-        return $this->db->dotazVsechnyObjekty('select A.id, A.ean, A.kusy, A.pobocka, A.datum, B.zbozi, B.model, B.popis from (select * from nevystavene where pobocka = ? and sap = 0 and kusy > 0) as A left join sap as B on A.ean = B.ean ', 'Zaznam', array($pobocka));
+        return $this->db->dotazVsechnyObjekty('select A.id, A.ean, A.ora, A.kusy, A.pobocka, A.datum, B.zbozi, B.model, B.popis from (select * from nevystavene where pobocka = ? and sap = 0) as A left join sap as B on A.ean = B.ean ', 'Zaznam', array($pobocka));
     }
 
-    public function zmenSapVystaveno($pobocka){
-        return $this->db->dotaz('update nevystavene set sap = 1 where pobocka = ? and kusy > 0 and sap = 0', array($pobocka));
+    public function zmenSapVystaveno($pobocka, $priznak){
+        return $this->db->dotaz('update nevystavene set sap = ? where pobocka = ? and kusy > 0 and sap = 0', array($priznak, $pobocka));
     }
 
     public function smazNevystaveno($id){
@@ -88,4 +88,9 @@ as A left join sap as B on A.ean = B.ean left join uzivatele as C on A.jmeno = C
     public function vratCerstveVystaveno($pobocka){
         return $this->db->dotazVsechnyObjekty('select * from nevystavene where sap = 0 and pobocka = ?', 'Zaznam', array($pobocka));
     }
+
+    public function vratVsechnyZaznamyNevystaveno($pobocka) {
+        return $this->db->dotazVsechnyObjekty('select C.ean, C.zarkusy, C.ora, C.nevystavkusy, C.priznak, D.zbozi, D.model, D.popis from (select A.ean, A.kusy as zarkusy, B.ora, B.kusy as nevystavkusy, B.sap as priznak from (select ean, sum(kusy) as kusy from zarizeni where pobocka = ? group by ean having sum(kusy) > 0) as A left join nevystavene as B on A.ean = B.ean) as C left join sap as D on C.ean = D.ean', 'Zaznam', array($pobocka));
+    }
+
 }
