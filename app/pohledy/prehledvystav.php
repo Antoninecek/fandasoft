@@ -88,7 +88,7 @@
             if (priz == -1 && nevys == -1) {
                 $("tbody tr").show();
             } else if(priz == -1){
-                $("tbody tr").hide().filter('[data-priznak=0][data-nevystavene="' + nevys + '"],[data-priznak=1][data-nevystavene="' + nevys + '"],[data-priznak=2][data-nevystavene="' + nevys + '"]').show();
+                $("tbody tr").hide().filter('[data-priznak=-2][data-nevystavene="' + nevys + '"],[data-priznak=0][data-nevystavene="' + nevys + '"],[data-priznak=1][data-nevystavene="' + nevys + '"],[data-priznak=2][data-nevystavene="' + nevys + '"]').show();
             } else if(nevys == -1){
                 $("tbody tr").hide().filter('[data-nevystavene=1][data-priznak="' + priz + '"],[data-nevystavene=0][data-priznak="' + priz + '"]').show();
                 console.log("a");
