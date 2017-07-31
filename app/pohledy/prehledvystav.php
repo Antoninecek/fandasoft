@@ -31,12 +31,20 @@
                     <th></th>
                     <th></th>
                     <th></th>
-                    <th></th>
+                    <th>
+                        <select id="sklad" title="a">
+                            <option value="-1">vse</option>
+                            <option value="0">0</option>
+                            <option value="1">0+</option>
+                            <option value="2">0-</option>
+                        </select>
+                    </th>
                     <th>
                         <select id="nevystavene" title="a">
                             <option value="-1">vse</option>
                             <option value="0">0</option>
                             <option value="1">0+</option>
+                            <option value="2">0-</option>
                         </select>
                     </th>
                     <th>
@@ -54,7 +62,7 @@
                 <?php
                 foreach ($seznam as $s) {
                     ?>
-                    <tr data-priznak='<?= $s->getPriznak() > -1 ? $s->getPriznak() : -2 ?>' data-nevystavene='<?= $s->getNevystavkusy() > 0 ? 1 : 0 ?>' >
+                    <tr data-sklad="<?php if($s->getZarkusy() == 0){echo 0;} else if($s->getZarkusy() > 0){echo 1;} else {echo 2;} ?>" data-priznak='<?= $s->getPriznak() > -1 ? $s->getPriznak() : -2 ?>' data-nevystavene='<?php if($s->getNevystavkusy() == 0){echo 0;} else if($s->getNevystavkusy() > 0){echo 1;} else {echo 2;} ?>' >
                         <td><?= $s->getEan() ?></td>
                         <td><?= empty($s->getZbozi()) ? $s->getOra() : $s->getZbozi() ?></td>
                         <td><?= $s->getModel() ?></td>
@@ -67,7 +75,7 @@
                         </td>
                     </tr>
                     <?php
-//                    TODO nejak poskladat - do sapu vlozit kategorie
+//                    TODO nejak poskladat - do sapu vlozit kategorie, do prehledu sumu, co se zapornym skladem?
                 }
                 ?>
                 </tbody>
@@ -81,21 +89,34 @@
     $(document).ready(function () {
 
 
-        $('#priznak, #nevystavene').on('change', function () {
+        $('#priznak, #nevystavene, #sklad').on('change', function () {
             var priz = $('#priznak').find($(':selected')).val();
             var nevys = $('#nevystavene').find($(':selected')).val();
+            var skl = $('#sklad').find($(':selected')).val();
 
-            if (priz == -1 && nevys == -1) {
-                $("tbody tr").show();
-            } else if(priz == -1){
-                $("tbody tr").hide().filter('[data-priznak=-2][data-nevystavene="' + nevys + '"],[data-priznak=0][data-nevystavene="' + nevys + '"],[data-priznak=1][data-nevystavene="' + nevys + '"],[data-priznak=2][data-nevystavene="' + nevys + '"]').show();
-            } else if(nevys == -1){
-                $("tbody tr").hide().filter('[data-nevystavene=1][data-priznak="' + priz + '"],[data-nevystavene=0][data-priznak="' + priz + '"]').show();
-                console.log("a");
+            var priznak;
+            var nevystaveno;
+            var sklad;
+
+            if(priz == -1){
+                priznak = '[data-priznak="-2"],[data-priznak="0"],[data-priznak="1"],[data-priznak="2"]';
             } else {
-                $("tbody tr").hide().filter('[data-nevystavene="' + nevys + '"][data-priznak="' + priz + '"]').show();
+                priznak = '[data-priznak="' + priz + '"]';
             }
 
+            if(skl == -1){
+                sklad = '[data-sklad="0"],[data-sklad="1"],[data-sklad="2"]';
+            } else {
+                sklad = '[data-sklad="' + skl + '"]';
+            }
+
+            if(nevys == -1){
+                nevystaveno = '[data-nevystavene="0"],[data-nevystavene="1"],[data-nevystavene="2"]';
+            } else {
+                nevystaveno = '[data-nevystavene="' + nevys + '"]';
+            }
+
+            $("tbody tr").hide().filter(priznak).filter(nevystaveno).filter(sklad).show();
         });
 
 

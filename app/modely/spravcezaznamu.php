@@ -90,7 +90,7 @@ as A left join sap as B on A.ean = B.ean left join uzivatele as C on A.jmeno = C
     }
 
     public function vratVsechnyZaznamyNevystaveno($pobocka) {
-        return $this->db->dotazVsechnyObjekty('select C.ean, C.zarkusy, C.ora, C.nevystavkusy, C.priznak, D.zbozi, D.model, D.popis from (select A.ean, A.kusy as zarkusy, B.ora, B.kusy as nevystavkusy, B.sap as priznak from (select ean, sum(kusy) as kusy from zarizeni where pobocka = ? group by ean having sum(kusy) > 0) as A left join nevystavene as B on A.ean = B.ean) as C left join sap as D on C.ean = D.ean', 'Zaznam', array($pobocka));
+        return $this->db->dotazVsechnyObjekty('select C.ean, C.zarkusy, C.ora, C.nevystavkusy, C.priznak, D.zbozi, D.model, D.popis from (select A.ean, A.kusy as zarkusy, B.ora, B.kusy as nevystavkusy, B.sap as priznak from (select ean, sum(kusy) as kusy from zarizeni where pobocka = ? group by ean) as A left join nevystavene as B on A.ean = B.ean) as C left join sap as D on C.ean = D.ean', 'Zaznam', array($pobocka));
     }
 
 }
