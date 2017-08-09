@@ -10,3 +10,4 @@
 25.07.2017 07:55:21 1111 pridal uzivatele 12345
 25.07.2017 12:22:47 1111 zmenil stav admin pro 13806 na 1
 25.07.2017 12:24:06 13806 vyresetoval heslo pro 13461
+08.08.2017 23:52:39 Neznamy zaznam 100001

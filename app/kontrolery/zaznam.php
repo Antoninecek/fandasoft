@@ -8,6 +8,7 @@
 
 namespace app\kontrolery;
 
+use app\modely\Log;
 use app\modely\Spravceuzivatelu;
 use app\modely\Spravcezaznamu;
 use app\modely\Spravcezbozi;
@@ -240,21 +241,6 @@ class zaznam extends Kontroler {
                             $result = $this->sz->pridejZaznam($ean, $imei1, $imei2, $kusy, $uzivatel->getId(), $text, $select, $faktura, $_SESSION[SESSION_POBOCKA]->getId());
 
                             if ($result['ovlivneno']) {
-                                if ($select == "KAMION" || $select == "REFAKT") {
-                                    // pridat do nevystaveno
-                                    $nevystaveno = $this->sz->vratNevystaveno($ean, $_SESSION[SESSION_POBOCKA]->getId()); # TODO asi by melo vratit obj. Zaznam
-                                    if ($nevystaveno) { # pokud to neco vratilo
-                                        $noveKusy = (int)$nevystaveno->getKusy() + (int)$kusy; # soucet kusu
-                                        $nevystavenoResult = $this->sz->updateKusyNevystaveno($nevystaveno->getId(), $noveKusy); # TODO update nevystaveno podle id zaznamu a kusu
-                                    } else {
-                                        $nevystavenoResult = $this->sz->pridejNevystaveno($ean, $kusy, $_SESSION[SESSION_POBOCKA]->getId()); # TODO pridani nevystaveno podle eanu, kusu a pobocky
-                                    }
-
-                                    if (!$nevystavenoResult) {
-                                        # TODO loguj chybu // TODO log chyb u prijmu
-                                    }
-                                }
-
                                 $textOpravy = "zaznam/oprav/?id=" . $result['lastid'];
                                 $this->sablona->set('upozorneni', new Upozorneni('success', "zbozi pridano <a href='$textOpravy'>OPRAV ZAZNAM</a>"));
                             } else {
@@ -326,20 +312,30 @@ class zaznam extends Kontroler {
         $content = new Pohled('app/pohledy/vystav');
 
         if (!empty($cislo) && is_numeric($cislo)) {
+
+            // musim si najit zbozi, abych mohl pracovat jen s orou - duplicitni zaznamy ora/ean
+            $zbozi = null;
             if (strlen((string)$cislo) > 10) {
-                $zaznam = $this->sz->vratNevystavenoEan($cislo, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
-                $ora = null;
-                $ean = $cislo;
+                $zbozi = $this->sz->vratZboziEan($cislo);
             } else {
-                $zaznam = $this->sz->vratNevystavenoOra($cislo, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
-                $ora = $cislo;
-                $ean = null;
+                $zbozi = $this->sz->vratZboziOra($cislo);
             }
-            // zaznam existuje, staci update kusu
-            if (is_object($zaznam)) {
-                $this->sz->updateKusyNevystaveno($zaznam->getId(), $zaznam->getKusy() + 1);
+
+            if (is_object($zbozi)) {
+                $zaznam = $this->sz->vratNevystavenoOra($zbozi->getZbozi(), $_SESSION[SESSION_POBOCKA]->getId());
+
+                // zaznam existuje, staci update kusu
+                if (is_object($zaznam)) {
+                    $this->sz->updateKusyNevystaveno($zaznam->getId(), $zaznam->getKusy() + 1);
+                    $this->zmenPriznak($zaznam, 0);
+                } else {
+                    $this->sz->pridejNevystaveno($zbozi->getZbozi(), 1, $_SESSION[SESSION_POBOCKA]->getId());
+                }
+                $this->sablona->set('upozorneni', new Upozorneni('success', "Pridano."));
             } else {
-                $this->sz->pridejNevystaveno($ean, $ora, 1, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
+                $this->sablona->set('upozorneni', new Upozorneni('danger', "Neznamy ean/ora, je treba vyckat s timto zaznamem na pozdeji."));
+                $log = new Log("Neznamy zaznam " . $cislo, 1);
+                $log->zapisLog();
             }
         }
 
@@ -348,11 +344,45 @@ class zaznam extends Kontroler {
         echo $this->sablona->rendruj();
     }
 
+    /**
+     * rozhodovaci strom pro zmenu priznaku
+     * @param $zaznam \app\modely\Zaznam
+     * @param $priznak int pozadovanej priznak
+     */
+    private function zmenPriznak($zaznam, $priznak) {
+        if ($zaznam->getPriznak() != 2) {
+            $this->sz->zmenPriznakNevystaveno($priznak, $zaznam->getId());
+        }
+    }
+
+    public function zmenPriznakAjax($parametry = null){
+        if(!empty($parametry['ora']) && isset($parametry['priznak']) && is_numeric($parametry['ora']) && is_numeric($parametry['priznak'])){
+            $zaznam = $this->sz->vratNevystavenoOra($parametry['ora'], $_SESSION[SESSION_POBOCKA]->getId());
+            if(!is_object($zaznam)){
+                $this->sz->pridejNevystaveno($parametry['ora'], 0, $_SESSION[SESSION_POBOCKA]->getId());
+                $zaznam = $this->sz->vratNevystavenoOra($parametry['ora'], $_SESSION[SESSION_POBOCKA]->getId());
+                if(!is_object($zaznam)){
+                    $log = new Log('kontrolery/zaznam zmenPriznakAjax', 1);
+                    $log->zapisLog();
+                    echo false;
+                } else {
+                    $this->sz->zmenPriznakNevystaveno($parametry['priznak'], $zaznam->getId());
+                    echo true;
+                }
+            } else {
+                $this->sz->zmenPriznakNevystaveno($parametry['priznak'], $zaznam->getId());
+                echo true;
+            }
+        } else {
+            echo false;
+        }
+    }
+
     public function vystavSap($parametry = null) {
-        $seznam = $this->sz->vratVsehnyNevystaveno($_SESSION[SESSION_POBOCKA]->getIdPobocka());
+        $seznam = $this->sz->vratVsehnyNevystaveno($_SESSION[SESSION_POBOCKA]->getId());
 
         if (!empty($parametry['vystavtoken']) && $parametry['vystavtoken'] == $_SESSION['vystavtoken']) {
-            $ovlivneno = $this->sz->zmenSapVystaveno($_SESSION[SESSION_POBOCKA]->getIdPobocka(), 1);
+            $ovlivneno = $this->sz->zmenSapVystaveno($_SESSION[SESSION_POBOCKA]->getId(), 1);
         } else {
             $ovlivneno = false;
         }
@@ -379,7 +409,7 @@ class zaznam extends Kontroler {
                 }
             }
 
-            $to = "frantisek.jukl@fandasoft.cz";
+            $to = EMAILTO;
             $subject = "#FANDASOFT - Vystaveno";
             $headers = "From: vystaveno@fandasoft.cz" . "\r\n";
             $headers .= "MIME-Version: 1.0\r\n";
@@ -390,12 +420,8 @@ class zaznam extends Kontroler {
                 $zboziid = empty($z->getZbozi()) ? $z->getOra() : $z->getZbozi();
                 $emailZbozi = $emailZbozi . $zboziid . " " . $z->getKusy() . "<br>";
             }
-            $emailEan = '';
-            foreach ($ean as $z) {
-                $emailEan = $emailEan . $z->getEan() . " " . $z->getKusy() . "<br>";
-            }
 
-            $emailText = "<html><head><title>vystaveno</title></head><body><h1>ORA</h1>" . $emailZbozi . "<br><h1>EAN</h1>" . $emailEan . "</body></html>";
+            $emailText = "<html><head><title>vystaveno</title></head><body><h1>ORA</h1>" . $emailZbozi . "</body></html>";
 
             mail($to, $subject, $emailText, $headers);
 
@@ -403,7 +429,7 @@ class zaznam extends Kontroler {
         $content->set('seznamZbozi', $zbozi);
         $content->set('seznamEan', $ean);
 
-        $seznam = $this->sz->vratVsehnyNevystaveno($_SESSION[SESSION_POBOCKA]->getIdPobocka());
+        $seznam = $this->sz->vratVsehnyNevystaveno($_SESSION[SESSION_POBOCKA]->getId());
         $content->set('seznam', $seznam);
 
         $this->sablona->set('titulek', 'Vystav');
@@ -416,21 +442,29 @@ class zaznam extends Kontroler {
 
         $content = new Pohled('app/pohledy/zabal');
         if (!empty($cislo) && is_numeric($cislo)) {
+
+            $zbozi = null;
             if (strlen((string)$cislo) > 10) {
-                $zaznam = $this->sz->vratNevystavenoEan($cislo, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
-                $ora = null;
-                $ean = $cislo;
+                $zbozi = $this->sz->vratZboziEan($cislo);
             } else {
-                $zaznam = $this->sz->vratNevystavenoOra($cislo, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
-                $ora = $cislo;
-                $ean = null;
+                $zbozi = $this->sz->vratZboziOra($cislo);
             }
-            // zaznam existuje, staci update kusu
-            if (is_object($zaznam)) {
-                $kusy = ($zaznam->getKusy() - 1) < 0 ? 0 : ($zaznam->getKusy() - 1);
-                $this->sz->updateKusyNevystaveno($zaznam->getId(), $kusy);
+
+            if (is_object($zbozi)) {
+                $zaznam = $this->sz->vratNevystavenoOra($zbozi->getZbozi(), $_SESSION[SESSION_POBOCKA]->getId());
+                // zaznam existuje, staci update kusu
+                if (is_object($zaznam)) {
+                    $kusy = ($zaznam->getKusy() - 1) < 0 ? 0 : ($zaznam->getKusy() - 1);
+                    $this->sz->updateKusyNevystaveno($zaznam->getId(), $kusy);
+                    $this->zmenPriznak($zaznam, 0);
+                } else {
+                    $this->sz->pridejNevystaveno($zbozi->getZbozi(), -1, $_SESSION[SESSION_POBOCKA]->getId());
+                }
+                $this->sablona->set('upozorneni', new Upozorneni('success', "Pridano."));
             } else {
-                $this->sz->pridejNevystaveno($ean, $ora, -1, $_SESSION[SESSION_POBOCKA]->getIdPobocka());
+                $this->sablona->set('upozorneni', new Upozorneni('danger', "Neznamy ean/ora, je treba vyckat s timto zaznamem na pozdeji."));
+                $log = new Log("Neznamy zaznam " . $cislo, 1);
+                $log->zapisLog();
             }
         }
 
@@ -442,8 +476,10 @@ class zaznam extends Kontroler {
     public function prehledVystav() {
 
         $seznam = $this->sz->vratVsechnyZaznamyNevystaveno($_SESSION[SESSION_POBOCKA]->getId());
+        $kategorie = array();
         $content = new Pohled('app/pohledy/prehledvystav');
         $content->set('seznam', $seznam);
+        $content->set('kategorie', $kategorie);
         $this->sablona->set('titulek', 'prehled vystav');
         $this->sablona->set('content', $content->rendruj());
         echo $this->sablona->rendruj();

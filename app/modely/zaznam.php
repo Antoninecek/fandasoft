@@ -10,7 +10,21 @@ namespace app\modely;
 
 
 class Zaznam implements \JsonSerializable{
-    private $id, $zbozi, $zarkusy, $priznak, $nevystavkusy, $ora, $model, $popis, $ean, $imei1, $imei2, $kusy, $jmeno, $text, $typ, $faktura, $datum, $pobocka;
+    private $id, $zbozi, $zarkusy, $priznak, $nevystavkusy, $ora, $model, $popis, $ean, $imei1, $imei2, $kusy, $jmeno, $text, $typ, $faktura, $datum, $pobocka, $kategorie;
+
+    /**
+     * @return mixed
+     */
+    public function getKategorie() {
+        return $this->kategorie;
+    }
+
+    /**
+     * @param mixed $kategorie
+     */
+    public function setKategorie($kategorie) {
+        $this->kategorie = $kategorie;
+    }
 
     /**
      * @return mixed

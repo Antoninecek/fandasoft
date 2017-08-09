@@ -11,9 +11,9 @@
     <title>#FANDASOFT - <?= $titulek ?></title>
 
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="<?= ROOT_DIR_FILES ?>jquery/jquery-3.1.1.min.js"></script>
+    <link rel="stylesheet" href="<?= ROOT_DIR_FILES ?>bootstrap/css/bootstrap.min.css">
+    <script src="<?= ROOT_DIR_FILES ?>bootstrap/js/bootstrap.min.js"></script>
     <!--  jsSHA256  -->
     <script type="text/javascript" src="<?= ROOT_DIR_FILES ?>jssha/src/sha256.js"></script>
     <script type="text/javascript" src="<?= ROOT_DIR_FILES ?>jssha/src/sha.js"></script>
@@ -45,7 +45,6 @@
             </div>
             <div class="col-sm-4" style="margin-top:5px">
                 <div class="row">
-
                     <ul class="nav navbar-nav hlavni-navigace">
                         <li>
                             <a href="zaznam/pridej">PRIDEJ</a>
@@ -65,20 +64,13 @@
                         <li>
                             <a href="zaznam/prehledvystav">VYSTAVENI</a>
                         </li>
-                        <li>
-                            <a href="inventura">INVENTURA</a>
-                        </li>
-                    </ul>
 
-                </div>
-                <div class="row">
-                    <ul class="nav navbar-nav hlavni-navigace">
                         <li>
-                            <a href="zaznamy">ZAZNAMY</a>
+                            <a href="inventura" class="dis">INVENTURA</a>
                         </li>
-                        <li>
-                            <a href="navod">NAVOD</a>
-                        </li>
+<!--                        <li>-->
+<!--                            <a href="zaznamy" class="dis">ZAZNAMY</a>-->
+<!--                        </li>-->
                         <li>
                             <a href="uzivatel">UZIVATEL</a>
                         </li>
@@ -116,7 +108,7 @@
                     <div style="color: gray;">
                         Frantisek Jukl<br>
                         <span class="glyphicon glyphicon-copyright-mark"></span> 2016 - 2017<br>
-                        <a href="mailto:frantisek.jukl@gmail.com" style="color: grey">frantisek.jukl@gmail.com</a><br>
+                        <a href="mailto:frantisek.jukl@gmail.com" style="color: grey">frantisek.jukl@fandasoft.cz</a><br>
                         <span>+420 607 749 929</span>
                     </div>
                 </div>
@@ -141,6 +133,17 @@
         <a href="home" style="color: lightgrey;">#FANDASOFT verze 2.0</a>
     </div>
 </footer>
+
+<script type="text/javascript">
+    $(document).ready(
+        function(){
+            $('.dis').on('click', function(e){
+                e.preventDefault();
+            })
+        }
+    )
+</script>
+
 <?php
 if (empty($_SESSION[SESSION_POBOCKA])) {
     ?>

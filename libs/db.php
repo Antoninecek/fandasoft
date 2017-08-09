@@ -18,6 +18,14 @@ class db {
         $this->spojeni = $spojeni;
     }
 
+    public function executeCommand($dotaz){
+        $return_var = NULL;
+        $output = NULL;
+        $command = $dotaz;
+        exec($command, $output, $return_var);
+        return array($return_var, $output);
+    }
+
     public function dotazJeden($dotaz, $parametry = array()) {
         $navrat = $this->spojeni->prepare($dotaz);
         $navrat->execute($parametry);

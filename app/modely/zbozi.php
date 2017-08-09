@@ -9,16 +9,17 @@
 namespace app\modely;
 
 
-class zbozi implements \JsonSerializable {
+class Zbozi implements \JsonSerializable {
     private $zbozi, $model, $ean, $popis, $kusy, $dualsim;
 
     /**
      * zbozi constructor.
-     * @param $zbozi
-     * @param $model
-     * @param $ean
-     * @param $popis
-     * @param $kusy
+     * @param null $zbozi
+     * @param null $model
+     * @param null $ean
+     * @param null $popis
+     * @param null $kusy
+     * @param null $dualsim
      */
     public function __construct($zbozi = null, $model = null, $ean = null, $popis = null, $kusy = null, $dualsim = null) {
         if ($zbozi != null) {
