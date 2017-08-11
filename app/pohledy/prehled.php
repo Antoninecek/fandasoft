@@ -25,6 +25,7 @@
                 <th>KUSY</th>
                 <th>JMENO</th>
                 <th>TEXT</th>
+                <th>TYP</th>
                 <th>DATUM</th>
                 </thead>
                 <tbody>
@@ -39,6 +40,7 @@
                             <td><?php echo $zaznam->getKusy() ?></td>
                             <td><?php echo $zaznam->getJmeno() ?></td>
                             <td><?php echo $zaznam->getText() ?></td>
+                            <td><?php echo $zaznam->getTyp() ?></td>
                             <td><?php echo $zaznam->getDatum() ?></td>
                         </tr>
                         <?php

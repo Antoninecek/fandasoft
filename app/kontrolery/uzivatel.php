@@ -39,7 +39,7 @@ class Uzivatel extends Kontroler {
         if (!empty($_SESSION['uzivatel'])) {
             if (!empty($_SESSION['uzivatel_login']) && $_SESSION['uzivatel_login'] + (60 * 10) > time()) {
                 $_SESSION['uzivatel_login'] = time() + (60 * 10);
-                $_SESSION['uzivatel']->setAdmin($this->su->vratAdmin($_SESSION['uzivatel']->getId()));
+                $_SESSION['uzivatel']->setAdmin($this->su->vratAdmin($_SESSION['uzivatel']->getId())->admin);
             } elseif (!empty($_SESSION['uzivatel_login']) && $_SESSION['uzivatel_login'] + (60 * 10) < time()) {
                 $this->odhlaseni();
             }

@@ -12,7 +12,7 @@
     <div class="row">
         <div class="col-sm-12">
             <form action="zaznam/vystav/" method="post">
-                <input type="number" name="vystavZaznam" class="form-control" placeholder="ORA / EAN">
+                <input type="number" name="vystavZaznam" class="form-control" placeholder="ORA!">
                 <input type="submit" class="btn btn-default">
             </form>
         </div>

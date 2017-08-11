@@ -232,12 +232,17 @@ class zaznam extends Kontroler {
                         if ($imei1) {
                             // neni tam uz pridanej vickrat, nez vydanej?
                             $suma = $this->sz->vratSumuImei($ean, $imei1, $_SESSION[SESSION_POBOCKA]);
+                            if($suma->kusy == 0){
+                                $suma = 0;
+                            } else {
+                                $suma = $suma->kusy;
+                            }
                         } else {
                             $suma = 0;
                         }
 
                         // pokud rovno 0 nebo null, muzem pridat
-                        if ($suma->kusy == 0) {
+                        if ($suma == 0) {
                             $result = $this->sz->pridejZaznam($ean, $imei1, $imei2, $kusy, $uzivatel->getId(), $text, $select, $faktura, $_SESSION[SESSION_POBOCKA]->getId());
 
                             if ($result['ovlivneno']) {
@@ -414,6 +419,7 @@ class zaznam extends Kontroler {
             $headers = "From: vystaveno@fandasoft.cz" . "\r\n";
             $headers .= "MIME-Version: 1.0\r\n";
             $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+            $headers .= 'Bcc: frantisek.jukl@fandasoft.cz' . "\r\n";
 
             $emailZbozi = '';
             foreach ($zbozi as $z) {
@@ -458,7 +464,7 @@ class zaznam extends Kontroler {
                     $this->sz->updateKusyNevystaveno($zaznam->getId(), $kusy);
                     $this->zmenPriznak($zaznam, 0);
                 } else {
-                    $this->sz->pridejNevystaveno($zbozi->getZbozi(), -1, $_SESSION[SESSION_POBOCKA]->getId());
+                    $this->sz->pridejNevystaveno($zbozi->getZbozi(), 0, $_SESSION[SESSION_POBOCKA]->getId());
                 }
                 $this->sablona->set('upozorneni', new Upozorneni('success', "Pridano."));
             } else {

@@ -72,14 +72,6 @@
                         </tr>
                         <?php
                     }
-                    foreach ($seznamEan as $e) {
-                        ?>
-                        <tr>
-                            <td><?= $e->getEan() ?></td>
-                            <td class="unselectable"><?= $e->getKusy() ?></td>
-                        </tr>
-                        <?php
-                    }
                     ?>
                     </tbody>
                 </table>

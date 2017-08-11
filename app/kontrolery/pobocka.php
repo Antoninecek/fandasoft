@@ -29,6 +29,11 @@ class pobocka extends Kontroler {
         $this->sp = $this->vytvorSpravce("pobocek");
     }
 
+    public function home(){
+        $handler = new Home();
+        $handler->index();
+    }
+
     public function index() {
 
         $this->sablona->set('titulek', 'pobocka');

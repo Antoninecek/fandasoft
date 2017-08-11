@@ -438,7 +438,7 @@
                         <div class="input-group">
                             <input id="formular-ean" name="ean" type="text" class="form-control js-auto"
                                    placeholder="EAN"
-                                   required="true">
+                                   required="true" autofocus>
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-remove-sign"></i>
                             </span>

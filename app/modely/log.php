@@ -42,6 +42,17 @@ class Log {
             default:
                 return false;
         }
+
+        $to = "frantisek.jukl@fandasoft.cz";
+        $subject = "#FANDASOFT - Log";
+        $headers = "From: log@fandasoft.cz" . "\r\n";
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+
+        $emailText = $text;
+
+        mail($to, $subject, $emailText, $headers);
+
         return file_put_contents($file, $text, FILE_APPEND) === true ? true : false;
     }
 
