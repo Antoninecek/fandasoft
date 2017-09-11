@@ -37,7 +37,7 @@ class Log {
         switch ($this->getTyp()) {
             case 1:
                 $file = 'logy/uzivatele.txt';
-                $text = date('d.m.Y H:i:s') . " " . $this->getText(). "\r\n";
+                $text = date('d.m.Y H:i:s') . " " . $this->getText() . $_SERVER['REQUEST_URI'] . "\r\n";
                 break;
             default:
                 return false;

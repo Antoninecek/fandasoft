@@ -51,7 +51,11 @@ class Kontroler {
     }
 
     protected function validateFormToken($token){
-        return $_SESSION[FORMTOKEN] === $token;
+        if(isset($_SESSION[FORMTOKEN])) {
+            return $_SESSION[FORMTOKEN] === $token;
+        } else {
+            return true;
+        }
     }
 
 }

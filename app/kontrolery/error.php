@@ -2,6 +2,7 @@
 
 namespace app\kontrolery;
 
+use app\modely\Log;
 use libs\Kontroler;
 use libs\Pohled;
 
@@ -21,7 +22,8 @@ class Error extends Kontroler {
     }
 
     public function error500($e){
-        // TODO LOGUJ CHYBU
+        $log = new Log($e, 1);
+        $log->zapisLog();
         $this->sablona->set('titulek', '500 error');
         $obsah = new Pohled('app/pohledy/500');
         $this->sablona->set('content', $obsah->rendruj());

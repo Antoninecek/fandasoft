@@ -8,6 +8,7 @@
 
 namespace app\kontrolery;
 
+use app\modely\Upozorneni;
 use PDO;
 use PDOException;
 use libs\Kontroler;
@@ -36,17 +37,30 @@ class zaloha extends Kontroler {
 
 
     public function vlozSap() {
+        $content = new Pohled('app/pohledy/upload');
         try {
             if ($this->ulozSoubor()) {
-                echo $this->souborDoDb();
+                $ar = $this->souborDoDb();
+                if ($ar > 100) {
+                    $this->sablona->set('upozorneni', new Upozorneni('success', 'celkovy pocet zaznamu je ' . $ar));
+                } else {
+                    $this->sablona->set('upozorneni', new Upozorneni('danger', 'neco se podelalo, zkontroluj znovu, ze vkladas spravny soubor, se spravnym layoutem'));
+                }
             }
         } catch (\ErrorException $e) {
-            echo "chyba";
+            $this->sablona->set('upozorneni', new Upozorneni('danger', 'neco se podelalo, zkontroluj znovu, ze vkladas spravny soubor, se spravnym layoutem'));
         }
+        $this->sablona->set('titulek', 'Zaloha');
+        $this->sablona->set('content', $content->rendruj());
+        echo $this->sablona->rendruj();
     }
 
     private function ulozSoubor() {
-        $target_dir = $_SERVER['DOCUMENT_ROOT'] . ROOT_DIR . "up/";
+        if (ENVIRONMENT == 'PROD') {
+            $target_dir = "up/";
+        } else {
+            $target_dir = $_SERVER['DOCUMENT_ROOT'] . ROOT_DIR . "up/";
+        }
         $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
         $uploadOk = 1;
         $imageFileType = pathinfo($target_file, PATHINFO_EXTENSION);
@@ -88,8 +102,11 @@ class zaloha extends Kontroler {
         $databasepassword = DB_PASS;
         $fieldseparator = ";";
         $lineseparator = "\n";
-        //$csvfile = $_SERVER['DOCUMENT_ROOT'] . "/" . ROOT_DIR . "up/sap.csv";
-        $csvfile = $_SERVER['DOCUMENT_ROOT'] . ROOT_DIR . "up/sap.csv";
+        if (ENVIRONMENT == 'PROD') {
+            $csvfile = "up/sap.csv";
+        } else {
+            $csvfile = $_SERVER['DOCUMENT_ROOT'] . ROOT_DIR . "up/sap.csv";
+        }
 
 
         if (!file_exists($csvfile)) {
@@ -108,14 +125,26 @@ class zaloha extends Kontroler {
         }
 
 //        print_r($this->szaloh->zalohujTabulku('sap'));
-        $pdo->exec('truncate sap');
+        $pdo->exec('delete from sap');
 
-        $affectedRows = $pdo->exec("
-      LOAD DATA LOCAL INFILE " . $pdo->quote($csvfile) . " INTO TABLE `$databasetable`
-      FIELDS TERMINATED BY " . $pdo->quote($fieldseparator) . "
-      LINES TERMINATED BY " . $pdo->quote($lineseparator));
+        $file = fopen($csvfile, "r");
+        $rows = 0;
+        while (($getData = fgetcsv($file, 10000, ";")) !== FALSE) {
+//            var_dump($getData);
+            $data1 = str_replace('"', ' ', $getData[1]);
+            $data3 = str_replace('"', ' ', $getData[3]);
 
-        return $affectedRows;
+//            $pdo->exec("insert into sap (zbozi, model, ean, popis, kusy, kategorie) values (/'" . $getData[0] . "/',/'" . $getData[1] . "/',/'" . $getData[2] . "/',/'" . $getData[3] . "/',/'" . $getData[4] . "/',/'" . $getData[5] ."/')");
+            $pdo->exec("insert into sap (zbozi, model, ean, popis, kusy, kategorie) values (\"" . $getData[0] . "\",\"" . $data1 . "\",\"" . $getData[2] . "\",\"" . $data3 . "\",\"" . $getData[4] . "\",\"" . $getData[5] . "\")");
+            $rows++;
+        }
+
+//        $affectedRows = $pdo->exec("
+//      LOAD DATA LOCAL INFILE " . $pdo->quote($csvfile) . " INTO TABLE `$databasetable`
+//      FIELDS TERMINATED BY " . $pdo->quote($fieldseparator) . "
+//      LINES TERMINATED BY " . $pdo->quote($lineseparator));
+
+        return $rows;
     }
 
 }

@@ -64,7 +64,6 @@
                         <li>
                             <a href="zaznam/prehledvystav">VYSTAVENI</a>
                         </li>
-
                         <li>
                             <a href="inventura" class="dis">INVENTURA</a>
                         </li>
@@ -73,6 +72,9 @@
 <!--                        </li>-->
                         <li>
                             <a href="uzivatel">UZIVATEL</a>
+                        </li>
+                        <li>
+                            <a href="zaloha">SAP</a>
                         </li>
                     </ul>
                 </div>
@@ -130,7 +132,7 @@
 </div>
 <footer class="footer">
     <div class="container-fluid">
-        <a href="home" style="color: lightgrey;">#FANDASOFT verze 2.0</a>
+        <a href="home" style="color: lightgrey;">#FANDASOFT verze 3.0</a>
     </div>
 </footer>
 
