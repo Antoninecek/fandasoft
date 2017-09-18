@@ -45,8 +45,16 @@ class Spravcezaznamu extends Spravce {
 //        return $this->db->dotazVsechnyObjekty('SELECT A.id, A.ean, A.imei1, A.imei2, A.kusy, A.text, A.typ, A.faktura, A.datum, B.jmeno FROM zarizeni as A, uzivatele as B WHERE ean = ? AND A.pobocka = ? AND B.id = A.jmeno', 'Zaznam', array($ean, $pobocka));
 //    }
 
+//    public function vratVsechnyZaznamyEan($ean, $pobocka){
+//        return $this->db->dotazVsechnyObjekty('select * from (select * from zarizeni where ean = ? and pobocka = ?) as A left join uzivatele as B on A.jmeno = B.id', 'Zaznam', array($ean, $pobocka));
+//    }
+
     public function vratVsechnyZaznamyEan($ean, $pobocka){
-        return $this->db->dotazVsechnyObjekty('select * from (select * from zarizeni where ean = ? and pobocka = ?) as A left join uzivatele as B on A.jmeno = B.id', 'Zaznam', array($ean, $pobocka));
+        return $this->db->dotazVsechnyObjekty('select A.id, A.ean, A.imei1, A.imei2, A.kusy, B.jmeno, A.text, A.typ, A.faktura, A.datum from (select * from zarizeni where ean = ? and pobocka = ?) as A left join uzivatele as B on A.jmeno = B.id ', 'Zaznam', array($ean, $pobocka));
+    }
+
+    public function vratSumu($ean, $pobocka){
+        return $this->db->dotazJeden('select sum(kusy) as kusy from zarizeni where ean = ? and pobocka = ?', array($ean, $pobocka));
     }
 
     public function vratZaznamy($pocet, $pobocka) {

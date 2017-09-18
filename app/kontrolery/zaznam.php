@@ -59,16 +59,18 @@ class zaznam extends Kontroler {
         if (is_numeric($id)) {
             if (strlen((string)$id) > 10) {
                 $zaznamy = $this->sz->vratVsechnyZaznamyEan($id, $_SESSION[SESSION_POBOCKA]->getId());
-            } else {
+                $suma = $this->sz->vratSumu($id, $_SESSION[SESSION_POBOCKA]->getId())->kusy;
+                } else {
                 $zbozi = $this->szb->vratZboziOra($id);
                 if (is_object($zbozi)) {
                     $zaznamy = $this->sz->vratVsechnyZaznamyEan($zbozi->getEan(), $_SESSION[SESSION_POBOCKA]->getId());
+                    $suma = $this->sz->vratSumu($zbozi->getEan(), $_SESSION[SESSION_POBOCKA]->getId())->kusy;
                 }
             }
-
             if (!empty($zaznamy)) {
                 $this->sablona->set('upozorneni', new Upozorneni('success', "celkem " . sizeof($zaznamy) . " zaznamu pro dotaz " . $id));
                 $content->set('zaznamy', $zaznamy);
+                $content->set('suma', $suma);
             } else {
                 $this->sablona->set('upozorneni', new Upozorneni('warning', "zadny zaznam pro dotaz " . $id));
             }
