@@ -162,6 +162,14 @@ select .nadpis {
     resize: none;
 }
 
+.prehled-zelene {
+    background-color: lightgreen;
+}
+
+.prehled-cervene {
+    background-color: indianred;
+}
+
 /** YE OLDE CSS **/
 
 /*!**/

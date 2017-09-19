@@ -6,9 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" type="image/png" sizes="32x32" href="<?= ROOT_DIR_FILES ?>favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= ROOT_DIR_FILES ?>favicon32.png">
 
-    <title>#FANDASOFT - <?= $titulek ?></title>
+    <title><?= $titulek ?></title>
 
     <!-- Bootstrap core CSS -->
     <script src="<?= ROOT_DIR_FILES ?>jquery/jquery-3.1.1.min.js"></script>
@@ -76,6 +76,9 @@
                         <li>
                             <a href="zaloha">SAP</a>
                         </li>
+                        <li>
+                            <a href="kontakt">KONTAKT</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -112,6 +115,7 @@
                         <span class="glyphicon glyphicon-copyright-mark"></span> 2016 - 2017<br>
                         <a href="mailto:frantisek.jukl@gmail.com" style="color: grey">frantisek.jukl@fandasoft.cz</a><br>
                         <span>+420 607 749 929</span>
+                        <a href="kontakt" style="color: grey">kontaktni formular</a>
                     </div>
                 </div>
             </div>
