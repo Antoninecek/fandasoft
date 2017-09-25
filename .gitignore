@@ -3,3 +3,5 @@ vendor
 app/config.php
 up/sap.csv
 logy/uzivatele.txt
+backups
+TODO.txt
