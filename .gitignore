@@ -1,3 +1,5 @@
 vendor
 .idea
 app/config.php
+up/sap.csv
+logy/uzivatele.txt
