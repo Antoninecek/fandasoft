@@ -13,7 +13,7 @@ class Home extends Kontroler {
     }
 
     public function index(){
-        $this->sablona->set('titulek', 'hello world');
+        $this->sablona->set('titulek', 'DOMA');
         $content = new Pohled('app/pohledy/uvodni');
         $this->sablona->set('content', $content->rendruj());
         echo $this->sablona->rendruj();
